@@ -1,9 +1,12 @@
+import { useIsReRender } from '@/common/hooks/useIsReRender';
 import React from 'react';
 
 const Button = ({
   onClick,
   children,
 }: React.ButtonHTMLAttributes<HTMLButtonElement>) => {
+  useIsReRender();
+
   return <button onClick={onClick}>{children}</button>;
 };
 

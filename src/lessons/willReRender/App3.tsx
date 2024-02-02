@@ -1,11 +1,13 @@
-import React, { useCallback } from 'react';
+import { useIsReRender } from '@/common/hooks/useIsReRender';
+import React, { memo, useCallback } from 'react';
 
-const Button = ({
-  onClick,
-  children,
-}: React.ButtonHTMLAttributes<HTMLButtonElement>) => {
-  return <button onClick={onClick}>{children}</button>;
-};
+const Button = memo(
+  ({ onClick, children }: React.ButtonHTMLAttributes<HTMLButtonElement>) => {
+    useIsReRender();
+
+    return <button onClick={onClick}>{children}</button>;
+  },
+);
 
 export const App3 = () => {
   const [count, setCount] = React.useState(0);
