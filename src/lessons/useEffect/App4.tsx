@@ -30,7 +30,7 @@ const useFetch = ({ options }: UseFetchArgs) => {
 export const App4 = () => {
   const data = useFetch({
     options: {
-      url: 'someUrl',
+      url: 'https://jsonplaceholder.typicode.com/todos/1',
       onSuccess: () => console.log('Data fetched successfully!'),
     },
   });

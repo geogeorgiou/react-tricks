@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 type Item = {
   name: string;
@@ -22,13 +22,23 @@ const CartItem = ({ item }: { item: Item }) => {
 };
 
 export const App1 = () => {
+  const [item, setItem] = useState({
+    name: 'Apples',
+    price: 2.99,
+    quantity: 10,
+  });
+
+  const handleChangeItem = () =>
+    setItem({
+      name: 'Apples',
+      price: 2.99,
+      quantity: 10,
+    });
+
   return (
-    <CartItem
-      item={{
-        name: 'Apples',
-        price: 2.99,
-        quantity: 10,
-      }}
-    />
+    <>
+      <button onClick={handleChangeItem}>Change Item</button>
+      <CartItem item={item} />
+    </>
   );
 };
