@@ -15,8 +15,9 @@ Enjoy! 🎉🎉🎉
 This repo is all about learning React in a better way and the nitty gritty stuff about:
 
 - `console.log` events 📋 during component lifecycle
-- `useEffect` executions ⚛
+- `useEffect, useMemo, useCallback` executions ⚛
 - `will it re-render?` scenarios 🌀
+- `Context` API 🚀
 
 ## Lesson setup
 
