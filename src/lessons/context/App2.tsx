@@ -40,23 +40,30 @@ const Parent = () => {
   const { handleClickIncrease, clickedTimes } = useCustomContext();
 
   return (
-    <>
+    <ContextProvider>
       Parent Comp{' '}
       <button onClick={handleClickIncrease}>
-        Increase Child {clickedTimes}
+        Increase Parent {clickedTimes}
       </button>
       <Child />
-    </>
+    </ContextProvider>
   );
 };
 
 const Child = () => {
-  const { clickedTimes } = useCustomContext();
+  const { handleClickIncrease, clickedTimes } = useCustomContext();
 
-  return <div>Child Comp Clicked {clickedTimes}</div>;
+  return (
+    <div>
+      Child Comp Clicked{' '}
+      <button onClick={handleClickIncrease}>
+        Increase Child {clickedTimes}
+      </button>
+    </div>
+  );
 };
 
-export const App1 = () => {
+export const App2 = () => {
   return (
     <ContextProvider>
       <Parent />

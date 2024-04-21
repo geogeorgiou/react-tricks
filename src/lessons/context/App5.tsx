@@ -37,14 +37,13 @@ const ContextProvider = ({ children }: { children: React.ReactNode }) => {
 //3. what happens with value passed from Provider if we pass a new object every time?
 
 const Parent = () => {
-  const { handleClickIncrease, clickedTimes } = useCustomContext();
+  const { handleClickIncrease } = useCustomContext();
+
+  console.log('Parent Rendered');
 
   return (
     <>
-      Parent Comp{' '}
-      <button onClick={handleClickIncrease}>
-        Increase Child {clickedTimes}
-      </button>
+      Parent Comp <button onClick={handleClickIncrease}>Increase Child</button>
       <Child />
     </>
   );
@@ -56,7 +55,7 @@ const Child = () => {
   return <div>Child Comp Clicked {clickedTimes}</div>;
 };
 
-export const App1 = () => {
+export const App5 = () => {
   return (
     <ContextProvider>
       <Parent />
