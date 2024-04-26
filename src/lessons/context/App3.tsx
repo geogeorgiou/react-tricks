@@ -3,6 +3,7 @@ import { createContext, useContext, useState } from 'react';
 type ContextType = {
   clickedTimes: number;
   handleClickIncrease: VoidFunction;
+  doNothing: VoidFunction;
 };
 
 const Context = createContext<ContextType | undefined>(undefined);
@@ -24,8 +25,12 @@ const ContextProvider = ({ children }: { children: React.ReactNode }) => {
     setClickedTimes((prev) => prev + 1);
   };
 
+  const doNothing = () => {
+    console.log('do nothing');
+  };
+
   return (
-    <Context.Provider value={{ clickedTimes, handleClickIncrease }}>
+    <Context.Provider value={{ clickedTimes, handleClickIncrease, doNothing }}>
       {children}
     </Context.Provider>
   );
@@ -37,13 +42,13 @@ const ContextProvider = ({ children }: { children: React.ReactNode }) => {
 //3. what happens with value passed from Provider if we pass a new object every time?
 
 const Parent = () => {
-  const { clickedTimes } = useCustomContext();
+  const { handleClickIncrease } = useCustomContext();
 
   console.log('Parent Rendered');
 
   return (
     <>
-      Parent Comp Increase Child {clickedTimes}
+      Parent Comp <button onClick={handleClickIncrease}>increase</button>
       <Child />
     </>
   );
@@ -52,17 +57,16 @@ const Parent = () => {
 const Child = () => {
   console.log('Child Rendered');
 
-  const { handleClickIncrease } = useCustomContext();
+  const { doNothing } = useCustomContext();
 
   return (
     <div>
-      Child Comp Clicked{' '}
-      <button onClick={handleClickIncrease}>Trigger Update</button>
+      Child Comp Clicked <button onClick={doNothing}>Trigger Update</button>
     </div>
   );
 };
 
-export const App3 = () => {
+export const App4 = () => {
   return (
     <ContextProvider>
       <Parent />

@@ -1,64 +1,72 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useReducer } from 'react';
 
-type ContextType = {
-  clickedTimes: number;
-  handleClickIncrease: VoidFunction;
+type Action = { type: 'increment' } | { type: 'decrement' };
+type Dispatch = (action: Action) => void;
+type State = { count: number };
+
+const CountStateContext = createContext<
+  { state: State; dispatch: Dispatch } | undefined
+>(undefined);
+
+const countReducer = (state: State, action: Action) => {
+  if (action.type === 'increment') {
+    return { count: state.count + 1 };
+  }
+
+  return { count: state.count - 1 };
 };
 
-const Context = createContext<ContextType | undefined>(undefined);
+const CountProvider = ({ children }: { children: React.ReactNode }) => {
+  const [state, dispatch] = useReducer(countReducer, { count: 0 });
+  // NOTE: you *might* need to memoize this value
+  // Learn more in http://kcd.im/optimize-context
+  const value = { state, dispatch };
+  return (
+    <CountStateContext.Provider value={value}>
+      {children}
+    </CountStateContext.Provider>
+  );
+};
 
-//create a custom hook for convenience
-const useCustomContext = () => {
-  const context = useContext(Context);
-  if (!context) {
-    throw new Error('useCustomContext must be used within a ContextProvider');
+const useCount = () => {
+  const context = useContext(CountStateContext);
+  if (context === undefined) {
+    throw new Error('useCount must be used within a CountProvider');
   }
   return context;
 };
 
-//a wrapper component that provides the context
-const ContextProvider = ({ children }: { children: React.ReactNode }) => {
-  const [clickedTimes, setClickedTimes] = useState(0);
-
-  const handleClickIncrease = () => {
-    setClickedTimes((prev) => prev + 1);
-  };
-
-  return (
-    <Context.Provider value={{ clickedTimes, handleClickIncrease }}>
-      {children}
-    </Context.Provider>
-  );
-};
-
-//Important Questions:
-//1. what happens to Child component if we add ContextProvider to Parent ?
-//2. what happens to Child component if we add ContextProvider to Child and trigger updates from Child?
-//3. what happens with value passed from Provider if we pass a new object every time?
-
 const Parent = () => {
-  const { handleClickIncrease } = useCustomContext();
+  const { dispatch } = useCount();
 
   console.log('Parent Rendered');
 
   return (
     <>
-      Parent Comp <button onClick={handleClickIncrease}>Increase Child</button>
+      Parent Comp{' '}
+      <button onClick={() => dispatch({ type: 'increment' })}>
+        Increase Child
+      </button>
+      <button onClick={() => dispatch({ type: 'decrement' })}>
+        Decrease Child
+      </button>
       <Child />
     </>
   );
 };
 
 const Child = () => {
-  const { clickedTimes } = useCustomContext();
+  const {
+    state: { count },
+  } = useCount();
 
-  return <div>Child Comp Clicked {clickedTimes}</div>;
+  return <div>Child Comp count {count}</div>;
 };
 
-export const App4 = () => {
+export const App5 = () => {
   return (
-    <ContextProvider>
+    <CountProvider>
       <Parent />
-    </ContextProvider>
+    </CountProvider>
   );
 };
