@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, use, useState } from 'react';
 
 type ContextType = {
   clickedTimes: number;
@@ -10,7 +10,7 @@ const Context = createContext<ContextType | undefined>(undefined);
 
 //create a custom hook for convenience
 const useCustomContext = () => {
-  const context = useContext(Context);
+  const context = use(Context);
   if (!context) {
     throw new Error('useCustomContext must be used within a ContextProvider');
   }

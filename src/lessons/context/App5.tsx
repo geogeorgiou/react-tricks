@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer } from 'react';
+import { createContext, use, useReducer } from 'react';
 
 type Action = { type: 'increment' } | { type: 'decrement' };
 type Dispatch = (action: Action) => void;
@@ -29,7 +29,7 @@ const CountProvider = ({ children }: { children: React.ReactNode }) => {
 };
 
 const useCount = () => {
-  const context = useContext(CountStateContext);
+  const context = use(CountStateContext);
   if (context === undefined) {
     throw new Error('useCount must be used within a CountProvider');
   }
@@ -63,7 +63,7 @@ const Child = () => {
   return <div>Child Comp count {count}</div>;
 };
 
-export const App6 = () => {
+export const App5 = () => {
   return (
     <CountProvider>
       <Parent />
