@@ -7,7 +7,7 @@ export const App2 = () => {
     setCount(count + 1);
   }
 
-  console.log('count', count);
+  console.log(`Count: ${count}`);
 
   return <button onClick={onAdd}>{count}</button>;
 };
