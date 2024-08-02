@@ -36,3 +36,11 @@ Run dev server
 ```bash
 yarn dev
 ```
+
+## Testing
+
+Unit testing
+
+```
+yarn test
+```
