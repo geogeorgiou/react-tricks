@@ -11,6 +11,5 @@ export default defineConfig({
     coverage: {
       exclude: ['src/**/test-utils/**', 'src/main.tsx'],
     },
-    reporters: ['html'],
   },
 });
