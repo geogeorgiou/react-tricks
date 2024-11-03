@@ -30,7 +30,7 @@ const CountProvider = ({ children }: { children: React.ReactNode }) => {
 
 const useCount = () => {
   const context = useContext(CountStateContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useCount must be used within a CountProvider');
   }
   return context;
@@ -63,7 +63,7 @@ const Child = () => {
   return <div>Child Comp count {count}</div>;
 };
 
-export const App5 = () => {
+export const App4 = () => {
   return (
     <CountProvider>
       <Parent />
