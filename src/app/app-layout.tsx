@@ -6,6 +6,7 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { SearchDialog } from '@/features/search/search-dialog';
 import { AppSidebar } from './app-sidebar';
 
 export function AppLayout() {
@@ -20,6 +21,7 @@ export function AppLayout() {
             <span className='text-sm text-muted-foreground'>
               React interview trick questions
             </span>
+            <SearchDialog />
           </header>
           <div className='mx-auto w-full max-w-7xl flex-1 p-4 md:p-6'>
             <Outlet />
