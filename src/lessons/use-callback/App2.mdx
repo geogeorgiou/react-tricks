@@ -1,0 +1,21 @@
+---
+title: 'useCallback with [count]'
+question: 'Now the callback is wrapped in `useCallback(..., [count])`. Which buttons increase the child?'
+---
+
+## Expected output
+
+- On mount: `Child: 1`
+- "Change callback": `+1`
+- "Do not change callback": **no change**
+
+## Why
+
+`useCallback` returns the **same function** until `count` changes:
+
+- "Change callback" updates `count`, so a new function is created and the effect runs.
+- "Do not change callback" updates `another`. The parent re-renders, but `count` is unchanged, so `useCallback` hands back the cached function and the effect is skipped.
+
+## Takeaway
+
+`useCallback` is useful when a function is a **dependency**: of an effect, of a `memo` component, or of another hook. Wrapping functions that nothing compares only adds noise.

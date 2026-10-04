@@ -1,0 +1,29 @@
+---
+title: 'Log after setState'
+question: 'What is logged on the first and second click?'
+---
+
+## Expected output
+
+```txt
+// click 1 (button shows 1)
+Count: 0
+// click 2 (button shows 2)
+Count: 1
+```
+
+## Why
+
+`setCount(count + 1)` doesn't change `count`. It asks React to re-render with a new value. The handler is still running inside the render where `count` was `0`, so it logs the **snapshot** of state from that render.
+
+Every render gets its own `count` constant. The next click runs a handler created by the next render, where `count` is `1`.
+
+## Takeaway
+
+To act on the value you just set, compute it first:
+
+```tsx
+const next = count + 1;
+setCount(next);
+console.log(next);
+```

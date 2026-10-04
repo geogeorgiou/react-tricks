@@ -1,0 +1,7 @@
+---
+title: 'Console Log'
+order: 1
+summary: 'When does state actually update? Predict exactly what each click logs.'
+---
+
+State updates are not instant. A setter schedules a re-render and your current render keeps its own snapshot of state. These questions test whether you can tell which snapshot a `console.log` sees.

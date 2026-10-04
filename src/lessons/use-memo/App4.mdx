@@ -1,0 +1,29 @@
+---
+title: 'Stable object reference'
+question: 'This memo returns an object. Why might it be the one useful `useMemo` in this lesson?'
+strictModeSensitive: true
+---
+
+## Expected output
+
+```txt
+{
+  "method": "GET",
+  "url": "/someUrl",
+  "headers": {
+    "Content-Type": "application/json"
+  }
+}
+```
+
+## Why
+
+Objects are compared **by reference**. Without the memo, `options` would be a new object on every render, and anything that depends on it would think it changed each time. That includes an effect's dependencies, a `memo`'d child, or a third-party hook.
+
+With `useMemo(..., [url])`, `options` keeps the **same reference** until `url` changes. This is the legitimate use case: the memo exists for **referential stability**, not speed.
+
+> **In StrictMode (development):** React renders every component twice, so each render-phase log appears twice. In React 19, the second render reuses the memoized object from the first, so both logs show the same object.
+
+## Takeaway
+
+With the [React Compiler](https://react.dev/learn/react-compiler), memoization like this happens automatically. Until you adopt it, memoize objects you pass into dependencies.

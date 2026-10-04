@@ -1,0 +1,12 @@
+---
+title: 'Shared provider'
+question: 'Parent increments the count. Does Child see the new value?'
+---
+
+## Expected output
+
+Clicking **Increase Child** updates both labels: `Increase Child 1` and `Child Comp Clicked 1`.
+
+## Why
+
+There's one provider at the top. Clicking updates its state, so it renders a new `value` object, and **every consumer re-renders** with the new `clickedTimes`. `Parent` and `Child` both read the same provider, so they stay in sync.

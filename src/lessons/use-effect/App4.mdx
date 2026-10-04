@@ -1,0 +1,35 @@
+---
+title: 'Latest callback via ref'
+question: 'The callback is read from a ref now. How many times is it logged?'
+strictModeSensitive: true
+---
+
+## Expected output
+
+```txt
+// mount, after ~300ms
+Data fetched successfully!
+```
+
+## Why
+
+`successRef.current` is reassigned on every render, so it always holds the **latest** `onSuccess`. The ref object itself never changes, though, so it doesn't belong in the dependencies. The effect depends only on `options.url`, which is a stable string, and runs once.
+
+> **In StrictMode (development):** the effect runs twice on mount and there's no cleanup to cancel the first request, so you'll see the log twice. A real implementation should ignore or abort a stale request in the cleanup.
+
+## Can useCallback do the same?
+
+Partly. Wrapping `onSuccess` in `useCallback` at the call site works, but every caller has to remember to do it, and the callback still changes whenever its own dependencies change. The ref pattern makes the hook robust no matter what callers pass.
+
+In React 19.2+, [`useEffectEvent`](https://react.dev/reference/react/useEffectEvent) is the built-in version of this pattern:
+
+```tsx
+const onSuccess = useEffectEvent(() => options.onSuccess?.());
+
+useEffect(() => {
+  fakeFetchJson(options.url).then((data) => {
+    setData(data);
+    onSuccess();
+  });
+}, [options.url]);
+```

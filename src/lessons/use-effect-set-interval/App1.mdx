@@ -1,0 +1,16 @@
+---
+title: 'Empty dependencies'
+question: 'What number does the counter show after 5 seconds?'
+---
+
+## Expected output
+
+The counter shows **1** and stays there.
+
+## Why
+
+The effect runs once, on mount, when `count` is `0`. The interval callback closes over **that** `count`, so every second it calls `setCount(0 + 1)`. After the first tick, the state is already `1`, so React bails out and nothing changes.
+
+The interval also has no cleanup, so it keeps running after the component unmounts. The preview sandbox clears it for you.
+
+> **In StrictMode (development):** the effect runs twice on mount and creates two intervals. Both set `1`, so you see the same result.

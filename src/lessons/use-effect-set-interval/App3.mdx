@@ -1,0 +1,19 @@
+---
+title: 'Updater + cleanup'
+question: 'Does this version tick correctly?'
+---
+
+## Expected output
+
+The counter ticks **1, 2, 3, …** once per second.
+
+## Why
+
+There are two fixes here:
+
+1. **Updater function:** `setCount((prev) => prev + 1)` doesn't read `count` from the closure. React passes in the current value, so `count` is no longer needed in the dependencies.
+2. **Cleanup:** `return () => clearInterval(t)` stops the interval on unmount.
+
+With `[]` the effect runs once, and exactly one interval exists at a time.
+
+> **In StrictMode (development):** React mounts, runs the cleanup, and mounts again. Because of the cleanup there's still only one live interval. This is exactly the bug StrictMode is designed to expose in the previous tabs.

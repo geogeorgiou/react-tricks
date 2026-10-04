@@ -1,0 +1,22 @@
+---
+title: 'Primitive dependencies'
+question: 'Same click, but the effect depends on `name` and `quantity`. What is logged now?'
+strictModeSensitive: true
+---
+
+## Expected output
+
+```txt
+// mount
+Apples quantity has changed to 10.
+// clicks
+(nothing)
+```
+
+## Why
+
+Clicking still sets a new object, so `CartItem` **re-renders**. But the effect's dependencies are strings and numbers, and `Object.is('Apples', 'Apples')` and `Object.is(10, 10)` are both `true`. React skips the effect.
+
+A re-render doesn't mean the effect re-runs. Only a changed dependency does that.
+
+> **In StrictMode (development):** React mounts, unmounts and re-mounts every component once, so mount effects run twice.

@@ -1,0 +1,7 @@
+---
+title: 'useEffect'
+order: 2
+summary: 'Dependencies are compared by reference. Spot the effects that run too often or never stop.'
+---
+
+React compares each dependency with `Object.is`. Objects and functions created during render are new every time, so they count as "changed" on every render.

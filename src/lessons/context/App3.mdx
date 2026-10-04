@@ -1,0 +1,29 @@
+---
+title: 'Consumer that only reads a function'
+question: 'Child only reads `doNothing` from context. Does it re-render when Parent clicks "increase"? What about "Trigger Update"?'
+strictModeSensitive: true
+---
+
+## Expected output
+
+```txt
+// mount
+Parent Rendered
+Child Rendered
+// click "increase"
+Parent Rendered
+Child Rendered
+// click "Trigger Update"
+do nothing
+```
+
+## Why
+
+- **increase:** the provider's state changes, so it builds a **new value object** and every consumer re-renders. That includes `Child`, even though it only reads `doNothing`. Context can't subscribe to just part of a value.
+- **Trigger Update:** it only logs. There's no state change, so nothing re-renders.
+
+> **In StrictMode (development):** React renders every component twice, so each render-phase log appears twice.
+
+## Takeaway
+
+Split rarely-changing values (functions, dispatch) into their own context, or memoize the value. Libraries that support selectors avoid this entirely.

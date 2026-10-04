@@ -1,0 +1,7 @@
+---
+title: 'Context'
+order: 7
+summary: 'Providers, nesting and value identity. Who re-renders when context changes?'
+---
+
+Every component that reads a context re-renders when the provider's `value` changes, compared by reference. A component reads from the **nearest** provider above it.

@@ -1,0 +1,7 @@
+---
+title: 'useMemo'
+order: 4
+summary: 'Is the memo pulling its weight? Spot the useless ones and the one that matters.'
+---
+
+`useMemo` caches a value between renders until a dependency changes. The cache isn't free: React stores the value and compares the dependencies on every render. It's worth it for **expensive** computations and for keeping a **stable reference**.

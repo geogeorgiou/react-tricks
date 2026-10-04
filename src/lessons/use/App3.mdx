@@ -1,0 +1,25 @@
+---
+title: 'Promise created once in the parent'
+question: 'The promise is created in the parent with `useState`. What happens now?'
+strictModeSensitive: true
+---
+
+## Expected output
+
+```txt
+fetchBreweries() called
+```
+
+You see **Loading...**, then after ~300ms the three breweries.
+
+## Why
+
+`App3` sits **above** the Suspense boundary, so it mounts normally and `useState(fetchBreweries)` creates the promise once. `BreweryList` suspends, React shows the fallback, and when it retries it gets the **same** promise (now resolved), so `use` returns the data.
+
+Hit **Reset** to remount and fetch again.
+
+> **In StrictMode (development):** React calls the `useState` initializer twice, so `fetchBreweries() called` appears twice. Only one result is kept.
+
+## Takeaway
+
+In real apps, promises usually come from a framework or data library (router loaders, React Query, Server Components) that caches them for you.

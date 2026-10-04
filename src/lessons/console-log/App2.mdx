@@ -1,0 +1,26 @@
+---
+title: 'Log during render'
+question: 'What is logged on mount and on each click?'
+strictModeSensitive: true
+---
+
+## Expected output
+
+```txt
+// mount
+Count: 0
+// click 1
+Count: 1
+// click 2
+Count: 2
+```
+
+## Why
+
+The log now sits in the component body, so it runs on **every render**. Each click schedules a re-render, and that render sees the new `count`. Compare with the previous tab, where the log ran in the handler with the old snapshot.
+
+> **In StrictMode (development):** React renders every component twice, so each render-phase log appears twice.
+
+## Takeaway
+
+Logging in the component body is a quick way to see renders, but it shows renders, not commits. React can render without committing (StrictMode, Suspense, transitions).

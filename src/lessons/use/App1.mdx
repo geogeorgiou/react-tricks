@@ -1,0 +1,24 @@
+---
+title: 'Conditional context read'
+question: '`use(ThemeContext)` runs after an early return. Is that allowed, and what shows up?'
+strictModeSensitive: true
+---
+
+## Expected output
+
+```txt
+// mount
+(nothing, the banner is hidden)
+// click "Show banner"
+Banner read theme: dark
+```
+
+The banner reads `Current theme: dark`.
+
+## Why
+
+`use` is not a hook, so the Rules of Hooks don't apply. It can come after an early return or sit inside an `if`. The same code with `useContext` would break the Rules of Hooks: the linter flags it, and the number of hooks would change between renders.
+
+Also new in React 19: `<ThemeContext value="dark">` works as a provider directly, without `.Provider`.
+
+> **In StrictMode (development):** React renders every component twice, so each render-phase log appears twice.

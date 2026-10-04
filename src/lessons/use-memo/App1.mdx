@@ -1,0 +1,18 @@
+---
+title: 'Sorting an inline array'
+question: 'Does this `useMemo` ever save work?'
+---
+
+## Expected output
+
+The sorted names render: Doe, Jane, John, Smith. Nothing is logged.
+
+## Why
+
+The memo only skips work when `data` is the **same reference** as last time. But `App1` passes an inline array literal (`data={[...]}`), so if `App1` ever re-rendered, `data` would be a new array and the sort would run again anyway.
+
+The memo can never hit its cache, so it only adds overhead.
+
+## Takeaway
+
+Make the input stable first. Hoist the constant out of the component (`const NAMES = [...]`) or memoize it where it's created. Then the memo can do its job, though sorting four names is probably still too cheap to bother.

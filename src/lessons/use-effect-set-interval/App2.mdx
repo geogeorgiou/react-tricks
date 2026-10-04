@@ -1,0 +1,19 @@
+---
+title: 'count as dependency, no cleanup'
+question: 'Adding `count` to the dependencies fixes the stale value, right?'
+---
+
+## Expected output
+
+The counter climbs, but it **stutters and jumps around**, and it gets worse over time.
+
+## Why
+
+Adding `count` to the dependencies re-runs the effect after every change, and each run creates a **new interval** with a fresh closure. Without a cleanup, none of the old intervals stop:
+
+- After 1s there are 2 intervals, after 2s there are 3, and so on.
+- Older intervals keep calling `setCount` with their **stale** values, which drags the count backwards, and every change spawns yet another interval.
+
+Fixing the closure without cleaning up turns one bug into a leak.
+
+> **In StrictMode (development):** the extra mount doubles the number of intervals from the start.

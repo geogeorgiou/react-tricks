@@ -1,0 +1,29 @@
+---
+title: 'Object dependency'
+question: 'Clicking "Change Item" sets an item with identical values. Does the effect log?'
+strictModeSensitive: true
+---
+
+## Expected output
+
+```txt
+// mount
+Apples quantity has changed to 10.
+// every click
+Apples quantity has changed to 10.
+```
+
+## Why
+
+`handleChangeItem` creates a **new object** every time. The values match, but `Object.is(prevItem, nextItem)` is `false`, so:
+
+1. `setItem` gets a new reference, and the component re-renders.
+2. `[item]` changed by reference, so the effect runs again.
+
+The log claims the quantity changed when it didn't.
+
+> **In StrictMode (development):** React mounts, unmounts and re-mounts every component once, so mount effects run twice.
+
+## Takeaway
+
+Depend on the primitive values you actually use. The next tab shows this.
