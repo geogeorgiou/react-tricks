@@ -1,14 +1,14 @@
 import { afterAll, afterEach, describe, expect, test, vi } from 'vitest';
 import { render, fireEvent } from '@testing-library/react';
-import { App2 } from '/Users/georgiosgeorgiou/Desktop/react-tricks/src/lessons/consoleLog/App2';
-import { assertConsoleCount, assertFunctionAndTextContent } from './test-utils';
+import { App1 } from './App1';
+import { assertFunctionAndTextContent } from './test-utils';
 
 // Mock console.log
 const consoleLogSpy = vi.spyOn(console, 'log');
 
 const initialCount = 0;
 
-describe('App2', () => {
+describe('App1', () => {
   afterEach(() => {
     consoleLogSpy.mockClear();
   });
@@ -18,13 +18,12 @@ describe('App2', () => {
   });
 
   test('should render button with initial count', () => {
-    const { getByText } = render(<App2 />);
+    const { getByText } = render(<App1 />);
     expect(getByText(initialCount.toString())).toBeVisible();
-    assertConsoleCount(consoleLogSpy, initialCount);
   });
 
   test('should increment count and log correct message on button click', () => {
-    const { getByText } = render(<App2 />);
+    const { getByText } = render(<App1 />);
 
     const button = getByText(initialCount);
 

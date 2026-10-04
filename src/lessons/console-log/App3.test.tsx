@@ -1,6 +1,6 @@
 import { afterAll, afterEach, describe, expect, test, vi } from 'vitest';
 import { render, fireEvent } from '@testing-library/react';
-import { App3 } from '/Users/georgiosgeorgiou/Desktop/react-tricks/src/lessons/consoleLog/App3';
+import { App3 } from './App3';
 import { assertConsoleCount } from './test-utils';
 
 // Mock console.log

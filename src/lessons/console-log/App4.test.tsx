@@ -1,14 +1,14 @@
 import { afterAll, afterEach, describe, expect, test, vi } from 'vitest';
 import { render, fireEvent } from '@testing-library/react';
-import { App1 } from '/Users/georgiosgeorgiou/Desktop/react-tricks/src/lessons/consoleLog/App1';
-import { assertFunctionAndTextContent } from './test-utils';
+import { App4 } from './App4';
+import { assertConsoleCount } from './test-utils';
 
 // Mock console.log
 const consoleLogSpy = vi.spyOn(console, 'log');
 
 const initialCount = 0;
 
-describe('App1', () => {
+describe('App4', () => {
   afterEach(() => {
     consoleLogSpy.mockClear();
   });
@@ -18,19 +18,25 @@ describe('App1', () => {
   });
 
   test('should render button with initial count', () => {
-    const { getByText } = render(<App1 />);
+    const { getByText } = render(<App4 />);
     expect(getByText(initialCount.toString())).toBeVisible();
+    assertConsoleCount(consoleLogSpy, initialCount);
   });
 
   test('should increment count and log correct message on button click', () => {
-    const { getByText } = render(<App1 />);
+    const { getByText } = render(<App4 />);
 
-    const button = getByText(initialCount);
-
-    fireEvent.click(button);
-    assertFunctionAndTextContent(button, consoleLogSpy, 0);
+    const button = getByText(initialCount.toString());
 
     fireEvent.click(button);
-    assertFunctionAndTextContent(button, consoleLogSpy, 1);
+    let nextCount = initialCount + 4;
+    assertConsoleCount(consoleLogSpy, 0);
+    assertConsoleCount(consoleLogSpy, nextCount);
+    expect(getByText(nextCount.toString())).toBeVisible();
+
+    fireEvent.click(button);
+    nextCount += 4;
+    assertConsoleCount(consoleLogSpy, nextCount);
+    expect(getByText(nextCount.toString())).toBeVisible();
   });
 });
