@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PreviewHost } from '@/features/preview/preview-host';
 import { CodeBlock } from './code-block';
+import { InlineMarkdown } from './inline-markdown';
 import type { Variant } from './registry';
 import { StrictModeBadge } from './strict-mode-badge';
 
@@ -18,7 +19,9 @@ export function VariantView({ variant }: { variant: Variant }) {
           <div className='flex items-start gap-3'>
             <MessageCircleQuestionIcon className='mt-0.5 size-5 shrink-0 text-muted-foreground' />
             <div className='flex flex-col gap-2'>
-              <p className='font-medium text-balance'>{variant.question}</p>
+              <p className='font-medium text-balance'>
+                <InlineMarkdown text={variant.question} />
+              </p>
               {variant.strictModeSensitive ? <StrictModeBadge /> : null}
             </div>
           </div>

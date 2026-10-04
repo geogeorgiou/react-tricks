@@ -181,3 +181,26 @@
     @apply mt-2;
   }
 }
+
+/* Prose tweaks for lesson MDX (unlayered so they beat the typography plugin) */
+.prose :where(code):not(:where(pre *))::before,
+.prose :where(code):not(:where(pre *))::after {
+  content: none;
+}
+
+.prose :where(code):not(:where(pre *)) {
+  @apply rounded bg-muted px-1 py-0.5 font-mono text-[0.85em] font-normal;
+}
+
+.prose :where(blockquote) {
+  @apply border-l-amber-500/60 font-normal not-italic text-muted-foreground;
+}
+
+.prose :where(blockquote p)::before,
+.prose :where(blockquote p)::after {
+  content: none;
+}
+
+.prose :where(pre) {
+  @apply rounded-lg border bg-muted/40 text-[13px] leading-relaxed;
+}

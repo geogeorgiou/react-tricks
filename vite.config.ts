@@ -12,7 +12,6 @@ export default defineConfig({
     {
       enforce: 'pre',
       ...mdx({
-        providerImportSource: '@mdx-js/react',
         remarkPlugins: [remarkFrontmatter, remarkMdxFrontmatter],
         rehypePlugins: [
           [
@@ -31,6 +30,16 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(import.meta.dirname, './src'),
+    },
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ['react', 'react-dom', 'react-router'],
+          ui: ['radix-ui', 'lucide-react'],
+        },
+      },
     },
   },
   test: {
