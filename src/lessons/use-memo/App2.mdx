@@ -1,0 +1,19 @@
+---
+title: 'Summing ten numbers'
+question: 'Is memoizing this sum worth it?'
+---
+
+## Expected output
+
+`Total: 55`
+
+## Why
+
+There are two problems:
+
+1. **The reference problem from the last tab:** `numbers` is an inline array, so the cache is never reused.
+2. **The work is tiny:** adding ten numbers takes nanoseconds. Storing the result and comparing dependencies on every render costs about as much as recomputing.
+
+## Takeaway
+
+Reach for `useMemo` when a computation is measurably slow (profile it), or when you need a stable reference. Not by default.

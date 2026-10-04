@@ -1,0 +1,25 @@
+---
+title: 'Updater function'
+question: 'The updater function logs `c`. What does it print on each click?'
+strictModeSensitive: true
+---
+
+## Expected output
+
+```txt
+// click 1 (button shows 1)
+Count: 1
+// click 2 (button shows 2)
+Count: 2
+```
+
+## Why
+
+React queues updates and processes them in order during the next render:
+
+1. `setCount(count + 1)` is the value `0 + 1 = 1`.
+2. The updater `(c) => c` receives the **pending** state from the queue, which is `1`, logs it and returns it unchanged.
+
+So unlike the first tab, an updater function sees the latest queued value, not the render's snapshot. Updaters run while React renders, not when you call the setter.
+
+> **In StrictMode (development):** React calls updater functions twice to catch impure ones, so `Count: 1` appears twice per click. That's the reason updaters must be pure. A log is harmless, a side effect is not.

@@ -1,0 +1,30 @@
+---
+title: 'Inline callback dependency'
+question: 'How many times is "Data fetched successfully!" logged?'
+strictModeSensitive: true
+---
+
+## Expected output
+
+```txt
+Data fetched successfully!
+Data fetched successfully!
+Data fetched successfully!
+... (forever, every ~300ms)
+```
+
+## Why
+
+This is an infinite fetch loop:
+
+1. `App3` passes a **new** `onSuccess` arrow function on every render.
+2. `options.onSuccess` is in the effect's dependencies, so every render re-runs the effect, which fetches again.
+3. When the fetch resolves, `setData` stores a **new** object, which triggers a re-render, which goes back to step 1.
+
+The preview uses a fake API with a 300ms delay. Against a real endpoint this would hammer the server. Hit **Reset** or switch tabs to stop it.
+
+> **In StrictMode (development):** React mounts, unmounts and re-mounts every component once, so mount effects run twice. That starts two loops' worth of requests.
+
+## Takeaway
+
+Callbacks such as `onSuccess` should not decide when to refetch. Only `url` should. The next tab keeps the callback out of the dependencies.

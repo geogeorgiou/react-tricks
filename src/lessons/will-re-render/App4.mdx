@@ -1,0 +1,28 @@
+---
+title: 'Ref for latest value'
+question: 'The handler reads `countRef.current` and has `[]` dependencies. Does `Button` re-render? What does the alert show?'
+strictModeSensitive: true
+---
+
+## Expected output
+
+```txt
+// mount
+Re-rendered
+// input changes
+(nothing)
+```
+
+Clicking **Show** alerts the **latest** count.
+
+## Why
+
+`onShow` no longer reads `count` directly. It reads `countRef.current`, which is updated on every render. With nothing in the dependencies, `useCallback` returns the same function forever, so `memo` sees identical props and skips `Button` entirely.
+
+The alert is still correct because the ref is read when the click happens, not when the function was created.
+
+> **In StrictMode (development):** React mounts, unmounts and re-mounts every component once, so mount effects run twice.
+
+## Takeaway
+
+Writing a ref during render works, but the React docs discourage it because it isn't safe under concurrent rendering. In practice the [React Compiler](https://react.dev/learn/react-compiler) removes most of this manual memoization, so measure before optimizing.

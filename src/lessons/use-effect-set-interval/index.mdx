@@ -1,0 +1,7 @@
+---
+title: 'useEffect + setInterval'
+order: 3
+summary: 'The classic stale-closure counter. Which version actually ticks?'
+---
+
+An interval callback is a closure. It sees the variables from the render that created it, unless you give it a way to read fresher state.

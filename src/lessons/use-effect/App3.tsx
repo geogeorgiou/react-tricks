@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { fakeFetchJson } from './fake-api';
 
 type UseFetchArgs = {
   options: {
@@ -8,15 +9,13 @@ type UseFetchArgs = {
 };
 
 const useFetch = ({ options }: UseFetchArgs) => {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<unknown>(null);
 
   useEffect(() => {
-    fetch(options.url)
-      .then((res) => res.json())
-      .then((data) => {
-        setData(data);
-        options.onSuccess?.();
-      });
+    fakeFetchJson(options.url).then((data) => {
+      setData(data);
+      options.onSuccess?.();
+    });
   }, [options.url, options.onSuccess]);
 
   return data;
@@ -25,7 +24,7 @@ const useFetch = ({ options }: UseFetchArgs) => {
 export const App3 = () => {
   const data = useFetch({
     options: {
-      url: 'https://jsonplaceholder.typicode.com/todos/1',
+      url: '/todos/1',
       onSuccess: () => console.log('Data fetched successfully!'),
     },
   });

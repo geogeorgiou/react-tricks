@@ -1,0 +1,22 @@
+---
+title: 'No memo'
+question: 'Typing in the input changes `count`. Does `Button` re-render on each change?'
+strictModeSensitive: true
+---
+
+## Expected output
+
+```txt
+// mount
+Re-rendered
+// every input change
+Re-rendered
+```
+
+## Why
+
+When a component re-renders, **all of its children re-render by default**, whether or not their props changed. `App1`'s state changes on every keystroke, so `Button` re-renders every time.
+
+That's usually fine, since rendering is cheap. The next tabs explore how to skip it when it isn't.
+
+> **In StrictMode (development):** React mounts, unmounts and re-mounts every component once, so mount effects run twice.

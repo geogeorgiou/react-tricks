@@ -1,0 +1,16 @@
+---
+title: 'Plain function prop'
+question: 'The child counts how often `callbackFunction` changes. Which buttons increase it?'
+---
+
+## Expected output
+
+- On mount: `Child: 1`
+- "Change callback": `+1`
+- "Do not change callback": **also `+1`**
+
+## Why
+
+Despite its label, **both** buttons change the callback. Any parent state update re-renders `App1`, and that creates a brand-new `countCallback` function. The child's effect depends on `[callbackFunction]`, so it runs after every parent render.
+
+The child's own `setValue` doesn't loop, because it re-renders only `Child`. The parent's function isn't recreated, so the effect doesn't fire again.

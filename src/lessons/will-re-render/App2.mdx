@@ -1,0 +1,22 @@
+---
+title: 'memo, inline handler'
+question: '`Button` is wrapped in `memo` now. Does it still re-render on each change?'
+strictModeSensitive: true
+---
+
+## Expected output
+
+```txt
+// mount
+Re-rendered
+// every input change
+Re-rendered
+```
+
+## Why
+
+`memo` skips a re-render only if **every prop** is equal (`Object.is`) to last time. `onShow` is declared in the component body, so it's a new function on every render. `memo` sees a changed `onClick` and re-renders anyway.
+
+`memo` on its own does nothing when you pass it new functions or objects.
+
+> **In StrictMode (development):** React mounts, unmounts and re-mounts every component once, so mount effects run twice.

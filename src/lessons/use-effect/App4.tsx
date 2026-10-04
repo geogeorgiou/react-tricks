@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { fakeFetchJson } from './fake-api';
 
 type UseFetchArgs = {
   options: {
@@ -8,7 +9,7 @@ type UseFetchArgs = {
 };
 
 const useFetch = ({ options }: UseFetchArgs) => {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<unknown>(null);
 
   //can I do the same with useCallback?
   //what are the tradeoffs?
@@ -16,12 +17,10 @@ const useFetch = ({ options }: UseFetchArgs) => {
   successRef.current = options.onSuccess;
 
   useEffect(() => {
-    fetch(options.url)
-      .then((res) => res.json())
-      .then((data) => {
-        setData(data);
-        successRef.current?.();
-      });
+    fakeFetchJson(options.url).then((data) => {
+      setData(data);
+      successRef.current?.();
+    });
   }, [options.url]);
 
   return data;
@@ -30,7 +29,7 @@ const useFetch = ({ options }: UseFetchArgs) => {
 export const App4 = () => {
   const data = useFetch({
     options: {
-      url: 'https://jsonplaceholder.typicode.com/todos/1',
+      url: '/todos/1',
       onSuccess: () => console.log('Data fetched successfully!'),
     },
   });

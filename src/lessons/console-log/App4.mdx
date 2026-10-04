@@ -1,0 +1,27 @@
+---
+title: 'Mixing values and updaters'
+question: 'What does the button show after one click, and what gets logged?'
+strictModeSensitive: true
+---
+
+## Expected output
+
+```txt
+// mount
+Count: 0
+// click 1 (button shows 4)
+Count: 4
+// click 2 (button shows 8)
+Count: 8
+```
+
+## Why
+
+Both updates go into the same queue and are **batched** into one re-render:
+
+1. `setCount(count + 1)` sets the value to `0 + 1 = 1`.
+2. The updater receives `1`, adds 3 and returns `4`.
+
+There's one render per click, so one log per click, and it shows the final value. Mutating the local `c` inside the updater is fine because it's a parameter, not state.
+
+> **In StrictMode (development):** React renders every component twice, so each render-phase log appears twice. The updater is also called twice, but it's pure, so the result is still `4`.

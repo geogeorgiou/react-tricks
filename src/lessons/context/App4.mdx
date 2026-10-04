@@ -1,0 +1,30 @@
+---
+title: 'useReducer + dispatch'
+question: 'Parent only uses `dispatch`, which never changes. Does Parent re-render on increment?'
+strictModeSensitive: true
+---
+
+## Expected output
+
+```txt
+// mount
+Parent Rendered
+// every increment / decrement
+Parent Rendered
+```
+
+## Why
+
+`dispatch` is stable, but `Parent` doesn't subscribe to `dispatch`. It subscribes to the **whole value** `{ state, dispatch }`, which is rebuilt on every provider render. A new object means every consumer re-renders, `Parent` included.
+
+The `NOTE` in the code hints at the fix: `useMemo` the value, or better, give `dispatch` its own context:
+
+```tsx
+<CountStateContext value={state}>
+  <CountDispatchContext value={dispatch}>{children}</CountDispatchContext>
+</CountStateContext>
+```
+
+Components that only dispatch then never re-render because of state changes.
+
+> **In StrictMode (development):** React renders every component twice, so each render-phase log appears twice.

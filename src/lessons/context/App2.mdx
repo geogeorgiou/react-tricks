@@ -1,0 +1,20 @@
+---
+title: 'Nested provider'
+question: 'Parent wraps Child in a second `ContextProvider`. What happens when you click each button?'
+---
+
+## Expected output
+
+- **Increase Parent** increments only the parent's number.
+- **Increase Child** increments only the child's number.
+
+They are two **independent** counters.
+
+## Why
+
+`useContext` reads from the **nearest provider above** the component:
+
+- `Parent` is rendered inside `App2`'s provider, so it reads (and increments) the **outer** state.
+- `Child` sits inside the provider that `Parent` renders, so it reads the **inner** one, which has its own `useState`.
+
+Clicking Parent re-renders the inner provider too, but its state is untouched, so Child's number stays put.

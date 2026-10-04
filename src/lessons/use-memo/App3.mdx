@@ -1,0 +1,22 @@
+---
+title: 'Concatenating strings'
+question: 'Does memoizing `fullName` help?'
+---
+
+## Expected output
+
+`John Doe`
+
+## Why
+
+Joining two strings is trivial, and strings are **primitives**, so a freshly computed `"John Doe"` is already equal (`Object.is`) to the previous one. Any child or effect that receives `fullName` sees no change either way.
+
+The memo doesn't help with speed or with stability.
+
+## Takeaway
+
+Just compute it inline:
+
+```tsx
+const fullName = `${firstName} ${lastName}`;
+```

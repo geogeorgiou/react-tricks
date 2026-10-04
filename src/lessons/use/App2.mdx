@@ -1,0 +1,27 @@
+---
+title: 'Promise created during render'
+question: '`BreweryList` calls `use(fetchBreweries())`. Does the list ever load?'
+---
+
+## Expected output
+
+```txt
+fetchBreweries() called
+fetchBreweries() called
+fetchBreweries() called
+...
+```
+
+It shows **Loading...** forever. The sandbox stops it after about 8 calls and shows an error.
+
+## Why
+
+When a component suspends on its **first render**, React throws away that render, including any state, and retries once the promise settles. The retry calls `fetchBreweries()` **again**, gets a **new pending promise**, suspends again, and so on forever.
+
+Even `useState` or `useMemo` inside `BreweryList` can't fix it, because the component never mounts, so nothing it creates is kept.
+
+> **In development**, React also warns: _"A component was suspended by an uncached promise."_
+
+## Takeaway
+
+The promise passed to `use` must be **created outside** the suspending component (in a parent, a loader or a cache) so the retry gets the same promise. The next tab shows how.

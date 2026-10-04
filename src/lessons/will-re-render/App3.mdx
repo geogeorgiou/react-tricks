@@ -1,0 +1,22 @@
+---
+title: 'memo + useCallback([count])'
+question: '`onShow` is wrapped in `useCallback(..., [count])`. Surely `Button` stops re-rendering now?'
+strictModeSensitive: true
+---
+
+## Expected output
+
+```txt
+// mount
+Re-rendered
+// every input change
+Re-rendered
+```
+
+## Why
+
+`useCallback` returns a new function whenever a dependency changes, and the dependency here is `count`, the very thing that changes on every keystroke. So `onShow` is still new on every render that matters, and `memo` still re-renders `Button`.
+
+The dependency is unavoidable, because `onShow` reads `count`. Drop it from the array and the alert would show a stale value.
+
+> **In StrictMode (development):** React mounts, unmounts and re-mounts every component once, so mount effects run twice.
