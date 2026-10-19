@@ -14,3 +14,12 @@ peerDependencyRules:
   allowedVersions:
     vite: '*'
     vitest: '*'
+
+# Supply-chain hardening
+strictDepBuilds: true
+minimumReleaseAge: 2880
+trustPolicy: no-downgrade
+# semver 6.x predates npm provenance; 7.x has it, so 6.3.1 reads as a
+# downgrade. Required by @babel/core (via shadcn). Pin the exception exactly.
+trustPolicyExclude:
+  - semver@6.3.1

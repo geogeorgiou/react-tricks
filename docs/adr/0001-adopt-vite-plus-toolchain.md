@@ -32,6 +32,11 @@ first-hand is a goal in itself.
 - In CI, use one job on `voidzero-dev/setup-vp`. Vercel infers install and build
   from the lockfile.
 - Leave git hooks out of scope; CI is the gate.
+- Harden pnpm in `pnpm-workspace.yaml`: `strictDepBuilds` (fail on unapproved
+  dependency build scripts), `minimumReleaseAge: 2880` (ignore releases newer
+  than 48h) and `trustPolicy: no-downgrade` (fail when a package loses
+  provenance). The one exclusion, `semver@6.3.1`, predates npm provenance and
+  is pinned exactly.
 
 ## Consequences
 
