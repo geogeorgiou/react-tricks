@@ -1,4 +1,11 @@
-import { afterAll, afterEach, describe, expect, test, vi } from 'vitest';
+import {
+  afterAll,
+  afterEach,
+  describe,
+  expect,
+  test,
+  vi,
+} from 'vite-plus/test';
 import { render, fireEvent } from '@testing-library/react';
 import { App2 } from './App2';
 import { assertConsoleCount, assertFunctionAndTextContent } from './test-utils';

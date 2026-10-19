@@ -30,7 +30,7 @@ export function SearchDialog() {
 
   const goTo = (lessonId: string) => {
     setOpen(false);
-    navigate(`/lessons/${lessonId}`);
+    void navigate(`/lessons/${lessonId}`);
   };
 
   return (

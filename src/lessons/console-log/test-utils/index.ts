@@ -1,8 +1,8 @@
-import { expect, MockInstance } from 'vitest';
+import { expect, MockInstance } from 'vite-plus/test';
 
 export function assertFunctionAndTextContent(
   button: HTMLElement,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   consoleLogSpy: MockInstance<(...data: any[]) => void>,
   countArg: number,
 ) {
@@ -11,7 +11,7 @@ export function assertFunctionAndTextContent(
 }
 
 export function assertConsoleCount(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   consoleLogSpy: MockInstance<(...data: any[]) => void>,
   countArg: number,
 ) {
