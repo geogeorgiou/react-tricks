@@ -33,11 +33,19 @@ export default defineConfig({
     },
   },
   build: {
-    rollupOptions: {
+    rolldownOptions: {
       output: {
-        manualChunks: {
-          react: ['react', 'react-dom', 'react-router'],
-          ui: ['radix-ui', 'lucide-react'],
+        codeSplitting: {
+          groups: [
+            {
+              name: 'react',
+              test: /node_modules[\\/](react|react-dom|react-router|scheduler)[\\/]/,
+            },
+            {
+              name: 'ui',
+              test: /node_modules[\\/](radix-ui|@radix-ui[\\/][^\\/]+|lucide-react)[\\/]/,
+            },
+          ],
         },
       },
     },
