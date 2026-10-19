@@ -76,7 +76,7 @@ A lesson only shows up once it has an `index.mdx`, and a tab only once both `App
 
 ## How do I run this?
 
-Use the Node version from `.nvmrc`, then install dependencies:
+Use the Node version from `.node-version`, then install dependencies:
 
 ```bash
 pnpm install
@@ -93,13 +93,13 @@ pnpm dev
 These are the same checks CI runs on every PR:
 
 ```bash
-pnpm typecheck
-pnpm lint
-pnpm format:check
+pnpm check        # format + lint + type check (vp check)
 pnpm test --run
 pnpm build
 ```
 
+`pnpm check:fix` formats and applies lint autofixes. Tooling choices are recorded in [ADR 0001](docs/adr/0001-adopt-vite-plus-toolchain.md).
+
 ## Stack
 
-React 19, Vite 8, react-router, Tailwind CSS v4 + shadcn/ui, MDX, Shiki and Vitest 5. Deployed on Vercel (`vercel.json` rewrites every route to the SPA).
+React 19, Vite+ (Vite 8, Vitest 5, Oxlint, Oxfmt), TypeScript 7, react-router, Tailwind CSS v4 + shadcn/ui, MDX, Shiki. Deployed on Vercel (`vercel.json` rewrites every route to the SPA).
