@@ -1,5 +1,6 @@
-import { NavLink, useMatch } from 'react-router';
 import { AtomIcon, BookOpenIcon, LayoutGridIcon } from 'lucide-react';
+import { NavLink, useMatch } from 'react-router';
+
 import {
   Sidebar,
   SidebarContent,

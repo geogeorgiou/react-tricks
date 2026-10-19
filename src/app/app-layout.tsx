@@ -1,4 +1,5 @@
 import { Outlet } from 'react-router';
+
 import { Separator } from '@/components/ui/separator';
 import {
   SidebarInset,
@@ -7,6 +8,7 @@ import {
 } from '@/components/ui/sidebar';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { SearchDialog } from '@/features/search/search-dialog';
+
 import { AppSidebar } from './app-sidebar';
 
 export function AppLayout() {

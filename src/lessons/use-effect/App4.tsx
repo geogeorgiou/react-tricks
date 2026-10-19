@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+
 import { fakeFetchJson } from './fake-api';
 
 type UseFetchArgs = {

@@ -1,4 +1,5 @@
 import { Suspense, use, useState } from 'react';
+
 import { fetchBreweries, type Brewery } from './fake-api';
 
 const BreweryList = ({

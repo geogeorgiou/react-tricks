@@ -1,5 +1,13 @@
-import { afterAll, afterEach, describe, expect, test, vi } from 'vitest';
 import { render, fireEvent } from '@testing-library/react';
+import {
+  afterAll,
+  afterEach,
+  describe,
+  expect,
+  test,
+  vi,
+} from 'vite-plus/test';
+
 import { App1 } from './App1';
 import { assertFunctionAndTextContent } from './test-utils';
 

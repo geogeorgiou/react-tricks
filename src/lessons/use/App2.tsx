@@ -1,4 +1,5 @@
 import { Suspense, use } from 'react';
+
 import { fetchBreweries } from './fake-api';
 
 const BreweryList = () => {

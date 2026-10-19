@@ -1,8 +1,10 @@
-import { useEffect, useRef, useSyncExternalStore } from 'react';
 import { BanIcon, TerminalIcon } from 'lucide-react';
+import { useEffect, useRef, useSyncExternalStore } from 'react';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardAction, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+
 import {
   clearEntries,
   getEntries,

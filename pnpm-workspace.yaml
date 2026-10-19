@@ -1,0 +1,25 @@
+catalog:
+  vite: npm:@voidzero-dev/vite-plus-core@1.3.0
+  vitest: 5.0.5
+  vite-plus: 1.3.0
+  '@vitest/coverage-v8': 5.0.5
+  '@vitest/ui': 5.0.5
+overrides:
+  vite@*: 'catalog:'
+  vitest@*: 'catalog:'
+peerDependencyRules:
+  allowAny:
+    - vite
+    - vitest
+  allowedVersions:
+    vite: '*'
+    vitest: '*'
+
+# Supply-chain hardening
+strictDepBuilds: true
+minimumReleaseAge: 2880
+trustPolicy: no-downgrade
+# semver 6.x predates npm provenance; 7.x has it, so 6.3.1 reads as a
+# downgrade. Required by @babel/core (via shadcn). Pin the exception exactly.
+trustPolicyExclude:
+  - semver@6.3.1

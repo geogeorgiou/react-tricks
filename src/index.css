@@ -193,7 +193,7 @@
 }
 
 .prose :where(blockquote) {
-  @apply border-l-amber-500/60 font-normal not-italic text-muted-foreground;
+  @apply border-l-amber-500/60 font-normal text-muted-foreground not-italic;
 }
 
 .prose :where(blockquote p)::before,

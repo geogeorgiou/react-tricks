@@ -1,5 +1,6 @@
-import { Link } from 'react-router';
 import { ArrowRightIcon } from 'lucide-react';
+import { Link } from 'react-router';
+
 import { Badge } from '@/components/ui/badge';
 import {
   Card,

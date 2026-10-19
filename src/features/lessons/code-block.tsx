@@ -1,7 +1,9 @@
-import { Suspense, use, useMemo, useState } from 'react';
 import { CheckIcon, CopyIcon, FileCodeIcon } from 'lucide-react';
+import { Suspense, use, useMemo, useState } from 'react';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardAction, CardHeader, CardTitle } from '@/components/ui/card';
+
 import { getHighlighter } from './highlighter';
 
 type CodeBlockProps = {

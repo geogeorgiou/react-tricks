@@ -1,5 +1,5 @@
-import type { ComponentType } from 'react';
 import type { MDXContent } from 'mdx/types';
+import type { ComponentType } from 'react';
 
 /**
  * Lessons are discovered from the file system:

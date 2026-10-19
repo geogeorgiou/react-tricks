@@ -50,6 +50,8 @@ export function formatArg(arg: unknown): string {
     try {
       return JSON.stringify(arg, null, 2);
     } catch {
+      // Circular structures can't be JSON-stringified; fall back to the default tag.
+      // oxlint-disable-next-line typescript/no-base-to-string
       return String(arg);
     }
   }
