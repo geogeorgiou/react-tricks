@@ -102,4 +102,4 @@ yarn build
 
 ## Stack
 
-React 19, Vite 6, react-router, Tailwind CSS v4 + shadcn/ui, MDX, Shiki and Vitest. Deployed on Vercel (`vercel.json` rewrites every route to the SPA).
+React 19, Vite 8, react-router, Tailwind CSS v4 + shadcn/ui, MDX, Shiki and Vitest 5. Deployed on Vercel (`vercel.json` rewrites every route to the SPA).
