@@ -1,5 +1,6 @@
-import { useEffect, useState, type ComponentType } from 'react';
 import { MonitorPlayIcon, RotateCcwIcon } from 'lucide-react';
+import { useEffect, useState, type ComponentType } from 'react';
+
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -8,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+
 import { ConsolePanel } from './console-panel';
 import { PreviewErrorBoundary } from './preview-error-boundary';
 import { beginSession, retainSession } from './sandbox';

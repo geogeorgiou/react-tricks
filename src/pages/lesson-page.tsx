@@ -1,7 +1,9 @@
 import { Navigate, useParams, useSearchParams } from 'react-router';
+
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { findLesson } from '@/features/lessons/registry';
 import { VariantView } from '@/features/lessons/variant-view';
+
 import { NotFoundPage } from './not-found-page';
 
 export function LessonPage() {

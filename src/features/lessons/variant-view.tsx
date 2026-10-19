@@ -1,8 +1,10 @@
-import { useState } from 'react';
 import { EyeIcon, LockIcon, MessageCircleQuestionIcon } from 'lucide-react';
+import { useState } from 'react';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PreviewHost } from '@/features/preview/preview-host';
+
 import { CodeBlock } from './code-block';
 import { InlineMarkdown } from './inline-markdown';
 import type { Variant } from './registry';

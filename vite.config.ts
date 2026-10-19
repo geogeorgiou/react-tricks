@@ -1,4 +1,5 @@
 import path from 'node:path';
+
 import mdx from '@mdx-js/rollup';
 import rehypeShiki from '@shikijs/rehype';
 import tailwindcss from '@tailwindcss/vite';
@@ -197,6 +198,13 @@ export default defineConfig({
     jsxSingleQuote: true,
     bracketSameLine: true,
     sortPackageJson: false,
+    sortImports: {
+      internalPattern: ['@/'],
+    },
+    sortTailwindcss: {
+      stylesheet: './src/index.css',
+      functions: ['cn', 'cva', 'clsx'],
+    },
     ignorePatterns: ['build', 'dist', 'coverage', 'pnpm-lock.yaml'],
   },
   plugins: lazyPlugins(() => [

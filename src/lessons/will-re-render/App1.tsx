@@ -1,5 +1,6 @@
-import { useIsReRender } from '@/common/hooks/useIsReRender';
 import React from 'react';
+
+import { useIsReRender } from '@/common/hooks/useIsReRender';
 
 const Button = ({
   onClick,

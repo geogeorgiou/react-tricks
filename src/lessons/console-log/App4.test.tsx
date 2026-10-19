@@ -1,3 +1,4 @@
+import { render, fireEvent } from '@testing-library/react';
 import {
   afterAll,
   afterEach,
@@ -6,7 +7,7 @@ import {
   test,
   vi,
 } from 'vite-plus/test';
-import { render, fireEvent } from '@testing-library/react';
+
 import { App4 } from './App4';
 import { assertConsoleCount } from './test-utils';
 

@@ -1,5 +1,6 @@
-import { useState } from 'react';
 import { MoonIcon, SunIcon } from 'lucide-react';
+import { useState } from 'react';
+
 import { Button } from '@/components/ui/button';
 
 type Theme = 'light' | 'dark';

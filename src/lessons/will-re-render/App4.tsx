@@ -1,5 +1,6 @@
-import { useIsReRender } from '@/common/hooks/useIsReRender';
 import React, { memo, useCallback, useRef } from 'react';
+
+import { useIsReRender } from '@/common/hooks/useIsReRender';
 
 const Button = memo(
   ({ onClick, children }: React.ButtonHTMLAttributes<HTMLButtonElement>) => {

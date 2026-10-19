@@ -1,6 +1,7 @@
+import { BookOpenIcon, SearchIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { BookOpenIcon, SearchIcon } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import {
   Command,

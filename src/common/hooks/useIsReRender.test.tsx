@@ -1,5 +1,6 @@
-import { describe, expect, test, vi } from 'vite-plus/test';
 import { render } from '@testing-library/react';
+import { describe, expect, test, vi } from 'vite-plus/test';
+
 import { useIsReRender } from './useIsReRender';
 
 // Mock component to use the hook
