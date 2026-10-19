@@ -7,13 +7,12 @@
     "node": ">=24.15"
   },
   "scripts": {
-    "dev": "vp dev --port 3000",
+    "dev": "vp dev",
     "build": "vp build",
     "preview": "vp preview",
     "typecheck": "tsc --noEmit",
-    "lint": "vp lint . --max-warnings 0",
-    "format": "vp fmt .",
-    "format:check": "vp fmt --check .",
+    "check": "vp check",
+    "check:fix": "vp check --fix",
     "test": "vp test",
     "test:ui": "vp test --ui"
   },
@@ -49,7 +48,6 @@
     "@vitejs/plugin-react": "^6.1.2",
     "@vitest/coverage-v8": "catalog:",
     "@vitest/ui": "catalog:",
-    "globals": "^17.13.0",
     "jsdom": "^30.1.3",
     "remark-frontmatter": "^5.0.0",
     "remark-mdx-frontmatter": "^6.0.0",
@@ -57,8 +55,8 @@
     "tailwindcss": "^4",
     "typescript": "^6.0.3",
     "vite": "catalog:",
-    "vitest": "catalog:",
-    "vite-plus": "catalog:"
+    "vite-plus": "catalog:",
+    "vitest": "catalog:"
   },
   "packageManager": "pnpm@12.14.0"
 }

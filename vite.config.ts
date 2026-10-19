@@ -218,6 +218,9 @@ export default defineConfig({
     react({ include: /\.(mdx|js|jsx|ts|tsx)$/ }),
     tailwindcss(),
   ]),
+  server: {
+    port: 3000,
+  },
   resolve: {
     alias: {
       '@': path.resolve(import.meta.dirname, './src'),
