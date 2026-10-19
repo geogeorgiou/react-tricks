@@ -227,6 +227,8 @@ export default defineConfig({
     tailwindcss(),
   ]),
   server: {
+    // Listen on 0.0.0.0 so devices on the local network can open the dev server
+    host: true,
     port: 3000,
   },
   resolve: {
