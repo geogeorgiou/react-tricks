@@ -2,6 +2,18 @@
 
 It's React Interview trick questions Time ⏰!
 
+## Stack
+
+- [React 19](https://react.dev)
+- [Vite+](https://viteplus.dev): [Vite 8](https://vite.dev), [Vitest 5](https://vitest.dev), [Oxlint](https://oxc.rs/docs/guide/usage/linter), [Oxfmt](https://oxc.rs/docs/guide/usage/formatter)
+- [TypeScript 7](https://www.typescriptlang.org)
+- [React Router](https://reactrouter.com)
+- [Tailwind CSS v4](https://tailwindcss.com) + [shadcn/ui](https://ui.shadcn.com)
+- [MDX](https://mdxjs.com)
+- [Shiki](https://shiki.style)
+- [pnpm](https://pnpm.io)
+- Deployed on [Vercel](https://vercel.com) (`vercel.json` rewrites every route to the SPA)
+
 ## Motivation
 
 The goal here is to have fun by learning more about React and its rendering paradigm, with a dashboard where every question runs live next to its code.
@@ -99,7 +111,3 @@ pnpm build
 ```
 
 `pnpm check:fix` formats and applies lint autofixes. Tooling choices are recorded in [ADR 0001](docs/adr/0001-adopt-vite-plus-toolchain.md).
-
-## Stack
-
-React 19, Vite+ (Vite 8, Vitest 5, Oxlint, Oxfmt), TypeScript 7, react-router, Tailwind CSS v4 + shadcn/ui, MDX, Shiki. Deployed on Vercel (`vercel.json` rewrites every route to the SPA).
