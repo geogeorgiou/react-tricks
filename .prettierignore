@@ -2,4 +2,4 @@
 build
 dist
 coverage
-yarn.lock
+pnpm-lock.yaml

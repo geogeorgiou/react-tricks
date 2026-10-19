@@ -30,7 +30,7 @@ Every tab shows the question and the lesson's real source code. Hit **Reveal ans
 - capture its `console` output in the console panel,
 - read the explanation (expected output, why, takeaway).
 
-> **StrictMode:** the app runs inside `<StrictMode>`, which only does its double render / double effect checks in development. Lessons affected by it show a badge saying which mode you're in, so you know why `yarn dev` and the deployed site can log differently.
+> **StrictMode:** the app runs inside `<StrictMode>`, which only does its double render / double effect checks in development. Lessons affected by it show a badge saying which mode you're in, so you know why `pnpm dev` and the deployed site can log differently.
 
 ## Adding a lesson
 
@@ -79,13 +79,13 @@ A lesson only shows up once it has an `index.mdx`, and a tab only once both `App
 Use the Node version from `.nvmrc`, then install dependencies:
 
 ```bash
-yarn
+pnpm install
 ```
 
 Run dev server (http://localhost:3000)
 
 ```bash
-yarn dev
+pnpm dev
 ```
 
 ## Checks
@@ -93,11 +93,11 @@ yarn dev
 These are the same checks CI runs on every PR:
 
 ```bash
-yarn typecheck
-yarn lint
-yarn format:check
-yarn test --run
-yarn build
+pnpm typecheck
+pnpm lint
+pnpm format:check
+pnpm test --run
+pnpm build
 ```
 
 ## Stack
