@@ -170,6 +170,9 @@ catalogs:
     '@vitest/ui':
       specifier: 5.0.5
       version: 5.0.5
+    actions-up:
+      specifier: 2.0.0
+      version: 2.0.0
     vite:
       specifier: npm:@voidzero-dev/vite-plus-core@1.3.0
       version: 1.3.0
@@ -276,6 +279,9 @@ importers:
       '@vitest/ui':
         specifier: 'catalog:'
         version: 5.0.5(vitest@5.0.5)
+      actions-up:
+        specifier: 'catalog:'
+        version: 2.0.0
       jsdom:
         specifier: ^30.1.3
         version: 30.1.3
@@ -2353,6 +2359,11 @@ packages:
   acorn@8.19.0:
     resolution: {integrity: sha512-oJlA3XiRm7Cyk6qFD2Jn8ak9B7jSy0qy00ADO3+8dpT0LSjFihQYv4C02LFCSYJV3Q37xYwwRy5m+IpIiUzqWw==}
     engines: {node: '>=0.4.0'}
+    hasBin: true
+
+  actions-up@2.0.0:
+    resolution: {integrity: sha512-zv5/KePnrY9T0fah3yQyjcSTWSpCd7Yl5QLx44eFp+fXeMbn2HrliDj4PHT1f9V98MbPt0olQZwZoO1076Clgw==}
+    engines: {node: '>=22.12.0'}
     hasBin: true
 
   ajv-formats@2.1.1:
@@ -6242,6 +6253,11 @@ snapshots:
       acorn: 8.19.0
 
   acorn@8.19.0: {}
+
+  actions-up@2.0.0:
+    dependencies:
+      semver: 7.8.5
+      yaml: 2.9.1
 
   ajv-formats@2.1.1:
     dependencies:
