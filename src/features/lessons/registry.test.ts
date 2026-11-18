@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vite-plus/test';
 
-import { findLesson, lessons } from './registry';
+import { findLesson, lessonSections, lessons } from './registry';
+import { sections } from './sections';
 
 describe('lesson registry', () => {
   test('discovers every lesson folder, ordered by frontmatter', () => {
@@ -45,5 +46,30 @@ describe('lesson registry', () => {
   test('findLesson looks lessons up by slug', () => {
     expect(findLesson('context')?.title).toBe('Context');
     expect(findLesson('nope')).toBeUndefined();
+  });
+
+  test('every lesson belongs to a known Section', () => {
+    const sectionIds = sections.map((section) => section.id);
+    lessons.forEach((lesson) => {
+      expect(sectionIds).toContain(lesson.section);
+    });
+  });
+
+  test('lessonSections groups every lesson once, in Section then lesson order', () => {
+    expect(
+      lessonSections.map((section) => [
+        section.id,
+        section.lessons.map((lesson) => lesson.id),
+      ]),
+    ).toEqual([
+      ['state', ['console-log']],
+      ['effects', ['use-effect', 'use-effect-set-interval']],
+      ['memoization', ['use-memo', 'use-callback', 'will-re-render']],
+      ['context', ['context']],
+      ['react-19', ['use']],
+    ]);
+    expect(lessonSections.flatMap((section) => section.lessons)).toHaveLength(
+      lessons.length,
+    );
   });
 });
