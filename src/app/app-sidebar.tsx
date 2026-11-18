@@ -16,6 +16,7 @@ import {
   SidebarRail,
   useSidebar,
 } from '@/components/ui/sidebar';
+import { FeedbackButton } from '@/features/feedback/feedback-button';
 import { lessons } from '@/features/lessons/registry';
 import { ThemeToggle } from '@/features/theme/theme-toggle';
 
@@ -92,6 +93,13 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter>
+        {import.meta.env.DEV && (
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <FeedbackButton />
+            </SidebarMenuItem>
+          </SidebarMenu>
+        )}
         <ThemeToggle />
       </SidebarFooter>
       <SidebarRail />

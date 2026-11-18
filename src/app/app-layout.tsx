@@ -1,3 +1,4 @@
+import { Toaster } from 'react-hot-toast';
 import { Outlet } from 'react-router';
 
 import { Separator } from '@/components/ui/separator';
@@ -30,6 +31,13 @@ export function AppLayout() {
           </div>
         </SidebarInset>
       </SidebarProvider>
+      <Toaster
+        position='top-right'
+        toastOptions={{
+          className:
+            'border! border-border! bg-popover! text-sm text-popover-foreground! shadow-md!',
+        }}
+      />
     </TooltipProvider>
   );
 }
