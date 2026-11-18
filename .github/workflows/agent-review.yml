@@ -12,7 +12,9 @@ name: Agent — Review A Pull Request
 #   checkout and three primary sources it fetches itself:
 #
 #     1. the diff              — what actually changed
-#     2. CODING_STANDARDS.md   — the rules, at the repo root
+#     2. the repo's docs       — the rules: CLAUDE.md, GLOSSARY.md and
+#                                docs/adr/, plus the lint config in
+#                                vite.config.ts
 #     3. the originating issue — what was asked for, read from the ticket the
 #                                PR closes, not from the PR description
 #
@@ -116,7 +118,7 @@ jobs:
           gh pr edit "$PR_NUMBER" --add-label "agent:in-progress"
 
       - name: Checkout the pull request
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # The PR's head, so the review's fixes are commits on top of it.
           # Full history: the review diffs it against the base.
@@ -133,7 +135,8 @@ jobs:
           # 1. The diff: the agent takes it against `origin/$BASE_REF`, the
           #    base as it is now, three-dot, so anything pushed to the base
           #    since the PR opened is not blamed on the PR.
-          # 2. The standards: CODING_STANDARDS.md, in the checkout.
+          # 2. The standards: CLAUDE.md, GLOSSARY.md and docs/adr/, in the
+          #    checkout.
           # 3. The spec. Whatever issue this PR closes — found in the PR body,
           #    which is the one thing here we do read from the PR. If there is
           #    no `Closes #n`, the Spec axis reports "no spec available"
@@ -151,24 +154,13 @@ jobs:
           fi
           cat /tmp/review-spec.md
 
-      - name: Setup Node.js 22
-        uses: actions/setup-node@v4
+      # Installs vp, Node (from .node-version) and pnpm, then runs `vp install`.
+      # Claude Code comes from the lockfile; `pnpm exec` puts it on PATH.
+      - name: Setup Vite+ and install dependencies
+        uses: voidzero-dev/setup-vp@cab1ab9eaff52d4857875f4f2c016e36af8f2c76 # v1.22.0
         with:
-          node-version: "22"
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Install Claude Code
-        run: npm install -g @anthropic-ai/claude-code
-
-      - name: Migrate and seed the database
-        # The pre-commit hook runs on every commit the agent makes, and the
-        # repo's checks need a database.
-        run: |
-          npm run db:migrate
-          npm run db:seed
+          node-version-file: .node-version
+          cache: true
 
       - name: Open the branch
         run: |
@@ -176,18 +168,21 @@ jobs:
           git config user.name "agent-factory[bot]"
           git config user.email "agent-factory[bot]@users.noreply.github.com"
           git checkout -B "$BRANCH"
-          # `npm ci` ran husky, which points git at .husky/_. If it did not,
-          # the agent's commits would skip the hook without anyone noticing.
-          if [ "$(git config core.hooksPath)" != ".husky/_" ]; then
-            echo "::error::The pre-commit hook is not installed (core.hooksPath is '$(git config core.hooksPath)')."
-            exit 1
-          fi
 
       - name: Review the pull request
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           OUTPUT_DIR: ${{ runner.temp }}
-        run: npx tsx .sandcastle/agent-workflows/review/review.ts
+        run: pnpm exec tsx .sandcastle/agent-workflows/review/review.ts
+
+      - name: Verify the agent's work
+        # This repo has no git hooks (docs/adr/0001): CI is the gate. So the
+        # checks ci.yml runs gate the push of the review's fixes too. No token in this step: it
+        # runs code the agent wrote.
+        run: |
+          pnpm check
+          pnpm test --run
+          pnpm build
 
       - name: Push the review's fixes
         id: push

@@ -54,12 +54,11 @@ name: Agent — Implement A Ticket
 #   the label is an approval only a collaborator can give.
 #
 # WHO COMMITS
-#   The agent does, and the repo's own pre-commit hook runs on every commit it
-#   makes — `npm ci` installs it, through husky's `prepare` script, exactly as
-#   it does on your machine. When the hook rejects a commit, the agent reads
-#   the failure, fixes its work and commits again. The hook is code from the
-#   repo, so it runs only where there is no token: every git command that
-#   holds one switches hooks off with `core.hooksPath=/dev/null`.
+#   The agent does. This repo has no git hooks (docs/adr/0001), so the agent
+#   runs `pnpm check`, `pnpm test --run` and `pnpm build` itself before each
+#   commit, and a step with no token runs them again before the push. That
+#   step runs code from the repo, so every git command that holds a token
+#   switches hooks off with `core.hooksPath=/dev/null` all the same.
 #
 # A CAUTION THAT COMES WITH IT
 #   `issues: labeled` fires on issues, which cannot come from a fork. Do not
@@ -115,30 +114,18 @@ jobs:
           gh issue edit "$ISSUE_NUMBER" --add-label "agent:in-progress"
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Setup Node.js 22
-        uses: actions/setup-node@v4
+      # Installs vp, Node (from .node-version) and pnpm, then runs `vp install`.
+      # Claude Code comes from the lockfile; `pnpm exec` puts it on PATH.
+      - name: Setup Vite+ and install dependencies
+        uses: voidzero-dev/setup-vp@cab1ab9eaff52d4857875f4f2c016e36af8f2c76 # v1.22.0
         with:
-          node-version: "22"
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Install Claude Code
-        run: npm install -g @anthropic-ai/claude-code
-
-      - name: Migrate and seed the database
-        # The agent gets a real database, because half of this repo's checks
-        # need one. It is disposable: a fresh one, migrated and seeded, on
-        # every run.
-        run: |
-          npm run db:migrate
-          npm run db:seed
+          node-version-file: .node-version
+          cache: true
 
       - name: Open the branch
         id: branch
@@ -149,12 +136,6 @@ jobs:
           git checkout -b "$BRANCH"
           # Where the agent starts. Anything after this is a commit it made.
           echo "base=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-          # `npm ci` ran husky, which points git at .husky/_. If it did not,
-          # the agent's commits would skip the hook without anyone noticing.
-          if [ "$(git config core.hooksPath)" != ".husky/_" ]; then
-            echo "::error::The pre-commit hook is not installed (core.hooksPath is '$(git config core.hooksPath)')."
-            exit 1
-          fi
 
       - name: Read the ticket
         env:
@@ -185,7 +166,16 @@ jobs:
       - name: Build the ticket
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-        run: npx tsx .sandcastle/agent-workflows/implement/implement.ts
+        run: pnpm exec tsx .sandcastle/agent-workflows/implement/implement.ts
+
+      - name: Verify the agent's work
+        # This repo has no git hooks (docs/adr/0001): CI is the gate. So the
+        # checks ci.yml runs gate the push here too. No token in this step: it
+        # runs code the agent wrote.
+        run: |
+          pnpm check
+          pnpm test --run
+          pnpm build
 
       - name: Check the agent committed
         # The agent owns the commits now, so this step owns the question of
@@ -231,6 +221,7 @@ jobs:
           # /tmp/evidence path in the body for its URL. It needs a PAT too:
           # GITHUB_TOKEN is rejected.
           GH_TOKEN: ${{ secrets.FACTORY_PAT }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
           set -euo pipefail
           title="$(gh issue view "$ISSUE_NUMBER" --json title --jq .title)"
@@ -251,7 +242,7 @@ jobs:
 
           url="$(gh pr create \
             --draft \
-            --base "${{ github.event.repository.default_branch }}" \
+            --base "$DEFAULT_BRANCH" \
             --head "$BRANCH" \
             --title "$title" \
             --body-file "$body_file" \

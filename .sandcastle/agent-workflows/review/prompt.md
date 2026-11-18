@@ -5,11 +5,13 @@ Review it with the code-review skill, .agents/skills/code-review/SKILL.md:
 
 - fixed point: `origin/{{BASE_REF}}`
 - spec: /tmp/review-spec.md
-- standards: CODING_STANDARDS.md
+- standards: CLAUDE.md, GLOSSARY.md, docs/adr/, and the lint config in
+  vite.config.ts
 
 Leave the human reviewer as little as possible. Fix every finding you can on
-`{{BRANCH}}`, and commit each fix through the pre-commit hook. The workflow
-pushes your commits. Leave `.github/` untouched.
+`{{BRANCH}}`, one commit per fix. This repo has no git hooks: before every
+commit, run `pnpm check`, `pnpm test --run` and `pnpm build`, and commit only
+when all three pass. The workflow runs them again, then pushes your commits. Leave `.github/` untouched.
 
 Every finding you leave unfixed becomes an inline comment on its file and
 line. You will be asked for them as structured output.

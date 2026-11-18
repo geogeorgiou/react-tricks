@@ -6,19 +6,21 @@ ticket out of a queue.
 - /tmp/spec.md: the spec it came from, for context only. Other tickets cover
   the rest of it.
 
-Read CODING_STANDARDS.md.
+Read CLAUDE.md, GLOSSARY.md and the ADRs in docs/adr/. Name code, UI copy
+and lesson MDX in GLOSSARY.md's words.
 
-- Behaviour goes in a deep module under app/modules/, behind an entry point a
-  test can call, never inline in a loader.
-- Tests ship in this ticket. End with more passing tests than you started
-  with.
+- Follow the structure already in src/: app behaviour under src/features/,
+  each Lesson's Questions under src/lessons/<lesson>/.
+- Ship tests with the code. End with more passing tests than you started
+  with, and none failing.
+- Before every commit, run `pnpm check`, `pnpm test --run` and `pnpm build`,
+  and commit only when all three pass. This repo has no git hooks; the
+  workflow runs the same three before it pushes, and a failure there parks
+  the ticket.
+- Commit with `git commit` on the current branch. Do not add git hooks or
+  change `core.hooksPath`.
 - The review workflow checks you against the ticket's "Done when". Reread it
   before you stop.
-- `npm run build` must pass too.
-- Commit with `git commit` on the current branch. When the pre-commit hook
-  rejects a commit, fix the work and commit again. The hook stays as it is:
-  no `--no-verify`, no edits to `.husky/`, `scripts/pre-commit.sh` or
-  `core.hooksPath`.
 - Finish with at least one commit and a clean working tree; without one, the
   ticket is parked for a person. The workflow pushes and opens the pull
   request.
@@ -26,11 +28,8 @@ Read CODING_STANDARDS.md.
 - When the change shows in the UI, save a before and an after screenshot as
   PNGs in /tmp/evidence/.
 
-**Leave `purchases.created_at` and `courses.instructor_id` unindexed**, on
-purpose. If your ticket's report is slow, say so in your summary and leave it
-slow.
-
-Write your summary to /tmp/pr-body.md: what the ticket asked for, what you
+Write your summary to /tmp/pr-body.md, in the voice of the `pr` skill
+(.agents/skills/pr/SKILL.md): what the ticket asked for, what you
 built, what you deliberately left out. In its Evidence section, reference each
 screenshot by its absolute path, e.g. `![after](/tmp/evidence/after.png)`. The
 workflow uploads them.

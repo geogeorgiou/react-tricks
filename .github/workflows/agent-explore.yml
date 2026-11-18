@@ -100,7 +100,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -147,20 +147,14 @@ jobs:
             gh issue edit "$n" --add-label "agent:in-progress"
           done
 
-      - name: Setup Node.js 22
+      # Installs vp, Node (from .node-version) and pnpm, then runs `vp install`.
+      # Claude Code comes from the lockfile; `pnpm exec` puts it on PATH.
+      - name: Setup Vite+ and install dependencies
         if: steps.batch.outputs.numbers != '[]'
-        uses: actions/setup-node@v4
+        uses: voidzero-dev/setup-vp@cab1ab9eaff52d4857875f4f2c016e36af8f2c76 # v1.22.0
         with:
-          node-version: "22"
-          cache: npm
-
-      - name: Install dependencies
-        if: steps.batch.outputs.numbers != '[]'
-        run: npm ci
-
-      - name: Install Claude Code
-        if: steps.batch.outputs.numbers != '[]'
-        run: npm install -g @anthropic-ai/claude-code
+          node-version-file: .node-version
+          cache: true
 
       - name: Explore
         if: steps.batch.outputs.numbers != '[]'
@@ -169,7 +163,7 @@ jobs:
           OUTPUT_DIR: ${{ runner.temp }}
         # The plan comes back as plan.json, shaped and validated by
         # .sandcastle/agent-workflows/explore/plan-schema.ts.
-        run: npx tsx .sandcastle/agent-workflows/explore/explore.ts
+        run: pnpm exec tsx .sandcastle/agent-workflows/explore/explore.ts
 
       - name: Hand the plan to the apply job
         id: plan
@@ -180,7 +174,7 @@ jobs:
 
       - name: Hand the screenshots to the apply job
         if: steps.batch.outputs.numbers != '[]'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: explore-evidence
           path: /tmp/evidence/*.png
@@ -207,7 +201,7 @@ jobs:
       - name: Take the screenshots from the explore job
         # A pattern, not a name, so a run with no screenshots finds nothing
         # and carries on.
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           pattern: explore-evidence
           path: /tmp/evidence

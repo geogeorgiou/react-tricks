@@ -7,18 +7,18 @@ export const diffLines = (diff: string): Map<string, Set<number>> => {
   let lines: Set<number> | undefined;
   let next = 0;
 
-  for (const line of diff.split("\n")) {
-    if (line.startsWith("diff --git ")) {
+  for (const line of diff.split('\n')) {
+    if (line.startsWith('diff --git ')) {
       inHeader = true;
       lines = undefined;
       continue;
     }
     if (inHeader) {
-      if (line.startsWith("+++ b/")) {
+      if (line.startsWith('+++ b/')) {
         lines = new Set();
-        files.set(line.slice("+++ b/".length), lines);
+        files.set(line.slice('+++ b/'.length), lines);
       }
-      if (!line.startsWith("@@")) continue;
+      if (!line.startsWith('@@')) continue;
       inHeader = false;
     }
     const hunk = line.match(/^@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@/);
@@ -26,7 +26,7 @@ export const diffLines = (diff: string): Map<string, Set<number>> => {
       next = Number(hunk[1]);
       continue;
     }
-    if (lines && (line.startsWith("+") || line.startsWith(" "))) {
+    if (lines && (line.startsWith('+') || line.startsWith(' '))) {
       lines.add(next);
       next++;
     }

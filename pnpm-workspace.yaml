@@ -24,3 +24,10 @@ trustPolicy: no-downgrade
 # downgrade. Required by @babel/core (via shadcn). Pin the exception exactly.
 trustPolicyExclude:
   - semver@6.3.1
+# For the agent workflows. esbuild (via tsx): its postinstall only optimises
+# the binary path, and the platform binary ships as an optional dependency.
+# @anthropic-ai/claude-code: its postinstall copies the platform binary from
+# an optional dependency into place, with no network access.
+allowBuilds:
+  '@anthropic-ai/claude-code': true
+  esbuild: false

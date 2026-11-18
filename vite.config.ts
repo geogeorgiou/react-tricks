@@ -205,7 +205,8 @@ export default defineConfig({
       stylesheet: './src/index.css',
       functions: ['cn', 'cva', 'clsx'],
     },
-    ignorePatterns: ['build', 'dist', 'coverage', 'pnpm-lock.yaml'],
+    // .agents/skills is vendored from upstream; keep it byte-identical.
+    ignorePatterns: ['build', 'dist', 'coverage', 'pnpm-lock.yaml', '.agents'],
   },
   plugins: lazyPlugins(() => [
     {

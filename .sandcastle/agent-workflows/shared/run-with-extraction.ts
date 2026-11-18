@@ -1,14 +1,15 @@
-import * as fs from "node:fs";
-import * as os from "node:os";
-import * as path from "node:path";
+import * as fs from 'node:fs';
+import * as os from 'node:os';
+import * as path from 'node:path';
+
 import {
   run,
   type OutputObjectDefinition,
   type RunOptions,
   type RunResult,
-} from "@ai-hero/sandcastle";
+} from '@ai-hero/sandcastle';
 
-export type RunWithExtractionOptions<T> = Omit<RunOptions, "output"> & {
+export type RunWithExtractionOptions<T> = Omit<RunOptions, 'output'> & {
   readonly output: OutputObjectDefinition<T>;
   readonly extractionPrompt: string;
   /**
@@ -24,7 +25,7 @@ export type RunWithExtractionOptions<T> = Omit<RunOptions, "output"> & {
 // toolset. The second resumes that session and asks only for the structured
 // output, so the answer is extracted from everything the first run read.
 export async function runWithExtraction<T>(
-  options: RunWithExtractionOptions<T>
+  options: RunWithExtractionOptions<T>,
 ): Promise<RunResult & { output: T }> {
   const {
     output,
@@ -49,7 +50,7 @@ export async function runWithExtraction<T>(
 
   if (!sessionId) {
     throw new Error(
-      "Cannot extract structured output because the produce run had no session id."
+      'Cannot extract structured output because the produce run had no session id.',
     );
   }
 
@@ -73,26 +74,26 @@ export async function runWithExtraction<T>(
 // A prompt file is copied with the instructions appended, so `promptArgs`
 // substitution still applies to it.
 const appendToPrompt = (
-  options: Pick<RunOptions, "prompt" | "promptFile">,
-  extractionPrompt: string
-): Pick<RunOptions, "prompt" | "promptFile"> => {
+  options: Pick<RunOptions, 'prompt' | 'promptFile'>,
+  extractionPrompt: string,
+): Pick<RunOptions, 'prompt' | 'promptFile'> => {
   const suffix = [
-    "",
-    "",
-    "When the task above is done, end with this final message. These rules bind that message only.",
-    "",
+    '',
+    '',
+    'When the task above is done, end with this final message. These rules bind that message only.',
+    '',
     extractionPrompt,
-  ].join("\n");
+  ].join('\n');
 
   if (options.promptFile === undefined) {
-    return { prompt: `${options.prompt ?? ""}${suffix}` };
+    return { prompt: `${options.prompt ?? ''}${suffix}` };
   }
 
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "run-with-extraction-"));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'run-with-extraction-'));
   const promptFile = path.join(dir, path.basename(options.promptFile));
   fs.writeFileSync(
     promptFile,
-    `${fs.readFileSync(options.promptFile, "utf8")}${suffix}`
+    `${fs.readFileSync(options.promptFile, 'utf8')}${suffix}`,
   );
   return { promptFile };
 };

@@ -44,23 +44,6 @@ name: Agent — Implement A Spec
 #   The workflow has no memory between runs; the queue on GitHub is the state.
 #   That is the trick — the issues are the program counter.
 #
-# WHAT IT IS POINTED AT: ADMIN PLATFORM ANALYTICS
-#
-#   The spec this was built for is the admin platform analytics rollup: revenue
-#   and enrolment reporting for the whole platform, over a date range, over the
-#   `purchases`, `refunds`, `courses` and `enrollments` tables that are already
-#   there. Per-course revenue net of refunds, per-instructor rollups, and a
-#   month-by-month trend, read by an admin and nobody else.
-#
-#   ⚠ `purchases.created_at` and `courses.instructor_id` have NO INDEX, and
-#   this workflow is not allowed to add one. Every date-ranged report the queue
-#   builds is therefore a full scan, and it gets slower with every seeded row.
-#   That is not an oversight and it is not yours to tidy up: the slow-query
-#   detector later in this section is supposed to find it, file its own ticket
-#   about it, and hand that ticket back to this same queue. Fix it now and you
-#   have nothing for the detector to find. The prompt below says so to the
-#   agent, in as many words.
-#
 # WHAT IT NEEDS
 #
 #   secrets.CLAUDE_CODE_OAUTH_TOKEN — the agent's auth token. Both agents are
@@ -115,7 +98,7 @@ on:
   #      • GitHub disables scheduled workflows in a repository with no commits
   #        for sixty days, and emails the owner. A quiet repo stops on its own.
   schedule:
-    - cron: "*/15 * * * *"
+    - cron: '*/15 * * * *'
 
   # 3. The button, and the chain. `workflow_dispatch` is how a human starts it
   #    without labelling anything — and it is how the `chain` job at the bottom
@@ -123,7 +106,7 @@ on:
   workflow_dispatch:
     inputs:
       spec_issue:
-        description: "The spec issue number to work. Leave blank to pick up whichever spec is labelled agent:implement-spec."
+        description: 'The spec issue number to work. Leave blank to pick up whichever spec is labelled agent:implement-spec.'
         required: false
         type: string
 
@@ -281,7 +264,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -294,17 +277,13 @@ jobs:
             --jq '"# " + .title + "\n\n" + .body' > /tmp/spec.md
           cat /tmp/spec.md
 
-      - name: Setup Node.js 22
-        uses: actions/setup-node@v4
+      # Installs vp, Node (from .node-version) and pnpm, then runs `vp install`.
+      # Claude Code comes from the lockfile; `pnpm exec` puts it on PATH.
+      - name: Setup Vite+ and install dependencies
+        uses: voidzero-dev/setup-vp@cab1ab9eaff52d4857875f4f2c016e36af8f2c76 # v1.22.0
         with:
-          node-version: "22"
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Install Claude Code
-        run: npm install -g @anthropic-ai/claude-code
+          node-version-file: .node-version
+          cache: true
 
       - name: Decompose the spec into a queue
         env:
@@ -312,7 +291,7 @@ jobs:
           OUTPUT_DIR: ${{ runner.temp }}
         # Reads only. The queue comes back as queue.json, shaped and validated
         # by .sandcastle/agent-workflows/implement-spec/decomposition-schema.ts.
-        run: npx tsx .sandcastle/agent-workflows/implement-spec/decompose.ts
+        run: pnpm exec tsx .sandcastle/agent-workflows/implement-spec/decompose.ts
 
       - name: Write the queue as issues
         env:
@@ -395,27 +374,18 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Setup Node.js 22
-        uses: actions/setup-node@v4
+      # Installs vp, Node (from .node-version) and pnpm, then runs `vp install`.
+      # Claude Code comes from the lockfile; `pnpm exec` puts it on PATH.
+      - name: Setup Vite+ and install dependencies
+        uses: voidzero-dev/setup-vp@cab1ab9eaff52d4857875f4f2c016e36af8f2c76 # v1.22.0
         with:
-          node-version: "22"
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Install Claude Code
-        run: npm install -g @anthropic-ai/claude-code
-
-      - name: Migrate and seed the database
-        run: |
-          npm run db:migrate
-          npm run db:seed
+          node-version-file: .node-version
+          cache: true
 
       - name: Claim the ticket
         # Moving the label first is what stops a cron tick that lands during a
@@ -465,17 +435,20 @@ jobs:
           git config user.email "agent-factory[bot]@users.noreply.github.com"
           git checkout -b "$BRANCH"
           echo "base=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-          # Same as agent-implement.yml: the agent commits through the repo's
-          # pre-commit hook, which `npm ci` installed. Fail if it did not.
-          if [ "$(git config core.hooksPath)" != ".husky/_" ]; then
-            echo "::error::The pre-commit hook is not installed (core.hooksPath is '$(git config core.hooksPath)')."
-            exit 1
-          fi
 
       - name: Build the ticket
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-        run: npx tsx .sandcastle/agent-workflows/implement-spec/build.ts
+        run: pnpm exec tsx .sandcastle/agent-workflows/implement-spec/build.ts
+
+      - name: Verify the agent's work
+        # This repo has no git hooks (docs/adr/0001): CI is the gate. So the
+        # checks ci.yml runs gate the push here too. No token in this step: it
+        # runs code the agent wrote.
+        run: |
+          pnpm check
+          pnpm test --run
+          pnpm build
 
       - name: Check the agent committed
         # A run with no commit fails here, so the ticket is parked with
@@ -517,6 +490,7 @@ jobs:
           # so `gh pr create` with it fails. This step runs nothing the agent
           # wrote: it reads the agent's summary as text and hands it to `gh`.
           GH_TOKEN: ${{ secrets.FACTORY_PAT }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch || 'main' }}
         run: |
           set -euo pipefail
           title=$(gh issue view "$TICKET" --json title --jq .title)
@@ -537,7 +511,7 @@ jobs:
 
           url="$(gh pr create \
             --draft \
-            --base "${{ github.event.repository.default_branch || 'main' }}" \
+            --base "$DEFAULT_BRANCH" \
             --head "$BRANCH" \
             --title "$title" \
             --body-file /tmp/pr-body.md \
@@ -572,11 +546,13 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.FACTORY_PAT }}
           PR_URL: ${{ steps.ship.outputs.url }}
+          SHIPPED: ${{ steps.ship.outputs.shipped }}
+          JOB_STATUS: ${{ job.status }}
         run: |
           set -euo pipefail
           gh issue edit "$TICKET" --remove-label "agent:in-progress" || true
 
-          if [ "${{ steps.ship.outputs.shipped }}" = "true" ]; then
+          if [ "$SHIPPED" = "true" ]; then
             # Closing it is what advances the frontier: the next run's survey
             # sees this position as satisfied, and whatever depended on it
             # becomes buildable.
@@ -590,7 +566,7 @@ jobs:
               --description "An agent run failed here. Its comment says how to retry" || true
             gh issue edit "$TICKET" --add-label "agent:blocked"
             gh issue comment "$TICKET" \
-              --body "The chain could not finish this one (**${{ job.status }}**) — [logs](${RUN_URL}). Left open and labelled for a person. The queue will skip past it. Take \`agent:blocked\` off to put it back in the queue. <!-- factory:status -->"
+              --body "The chain could not finish this one (**${JOB_STATUS}**) — [logs](${RUN_URL}). Left open and labelled for a person. The queue will skip past it. Take \`agent:blocked\` off to put it back in the queue. <!-- factory:status -->"
           fi
 
   # ── THE CHAIN ─────────────────────────────────────────────────────────────
