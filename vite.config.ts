@@ -8,6 +8,8 @@ import remarkFrontmatter from 'remark-frontmatter';
 import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
 import { defineConfig, lazyPlugins } from 'vite-plus';
 
+import { feedbackPlugin } from './src/features/feedback/feedback-plugin';
+
 export default defineConfig({
   lint: {
     plugins: ['oxc', 'typescript', 'unicorn'],
@@ -226,6 +228,7 @@ export default defineConfig({
     },
     react({ include: /\.(mdx|js|jsx|ts|tsx)$/ }),
     tailwindcss(),
+    feedbackPlugin(),
   ]),
   server: {
     // Listen on 0.0.0.0 so devices on the local network can open the dev server
