@@ -17,17 +17,17 @@ describe('lesson registry', () => {
   });
 
   test.each(lessons.map((lesson) => [lesson.id, lesson] as const))(
-    '%s variants are complete and in file order',
+    '%s questions are complete and in file order',
     (_id, lesson) => {
-      expect(lesson.variants.length).toBeGreaterThan(0);
-      lesson.variants.forEach((variant, index) => {
-        expect(variant.id).toBe(`app${index + 1}`);
-        expect(variant.fileName).toBe(`App${index + 1}.tsx`);
-        expect(variant.source).toContain(`export const App${index + 1}`);
-        expect(variant.title).not.toBe('');
-        expect(variant.question).not.toBe('');
-        expect(typeof variant.Component).toBe('function');
-        expect(typeof variant.Explanation).toBe('function');
+      expect(lesson.questions.length).toBeGreaterThan(0);
+      lesson.questions.forEach((question, index) => {
+        expect(question.id).toBe(`app${index + 1}`);
+        expect(question.fileName).toBe(`App${index + 1}.tsx`);
+        expect(question.source).toContain(`export const App${index + 1}`);
+        expect(question.title).not.toBe('');
+        expect(question.prompt).not.toBe('');
+        expect(typeof question.Component).toBe('function');
+        expect(typeof question.Explanation).toBe('function');
       });
     },
   );
@@ -37,7 +37,7 @@ describe('lesson registry', () => {
       import.meta.glob(['/src/lessons/*/App*.tsx', '!**/*.test.tsx']),
     );
     const explained = lessons.flatMap((lesson) =>
-      lesson.variants.map((v) => `/src/lessons/${lesson.id}/${v.fileName}`),
+      lesson.questions.map((q) => `/src/lessons/${lesson.id}/${q.fileName}`),
     );
     expect(explained.sort()).toEqual(files.sort());
   });

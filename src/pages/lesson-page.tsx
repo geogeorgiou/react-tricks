@@ -1,8 +1,8 @@
 import { Navigate, useParams, useSearchParams } from 'react-router';
 
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { QuestionView } from '@/features/lessons/question-view';
 import { findLesson } from '@/features/lessons/registry';
-import { VariantView } from '@/features/lessons/variant-view';
 
 import { NotFoundPage } from './not-found-page';
 
@@ -14,10 +14,10 @@ export function LessonPage() {
   if (!lesson) return <NotFoundPage />;
 
   const tab = searchParams.get('tab');
-  const variant = lesson.variants.find((v) => v.id === tab);
+  const question = lesson.questions.find((q) => q.id === tab);
 
-  if (!variant) {
-    return <Navigate replace to={`?tab=${lesson.variants[0].id}`} />;
+  if (!question) {
+    return <Navigate replace to={`?tab=${lesson.questions[0].id}`} />;
   }
 
   return (
@@ -32,14 +32,14 @@ export function LessonPage() {
       </div>
 
       <Tabs
-        value={variant.id}
+        value={question.id}
         onValueChange={(next) => setSearchParams({ tab: next })}>
         <div className='-mx-1 overflow-x-auto px-1 pb-1'>
           <TabsList>
-            {lesson.variants.map((v, index) => (
-              <TabsTrigger key={v.id} value={v.id} title={v.title}>
+            {lesson.questions.map((q, index) => (
+              <TabsTrigger key={q.id} value={q.id} title={q.title}>
                 <span className='text-muted-foreground'>{index + 1}.</span>
-                {v.title}
+                {q.title}
               </TabsTrigger>
             ))}
           </TabsList>
@@ -47,7 +47,7 @@ export function LessonPage() {
       </Tabs>
 
       {/* Keyed so reveal state and the preview reset when switching tabs */}
-      <VariantView key={`${lesson.id}/${variant.id}`} variant={variant} />
+      <QuestionView key={`${lesson.id}/${question.id}`} question={question} />
     </div>
   );
 }

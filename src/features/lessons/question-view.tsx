@@ -7,10 +7,10 @@ import { PreviewHost } from '@/features/preview/preview-host';
 
 import { CodeBlock } from './code-block';
 import { InlineMarkdown } from './inline-markdown';
-import type { Variant } from './registry';
+import type { Question } from './registry';
 import { StrictModeBadge } from './strict-mode-badge';
 
-export function VariantView({ variant }: { variant: Variant }) {
+export function QuestionView({ question }: { question: Question }) {
   const [revealed, setRevealed] = useState(false);
   const reveal = () => setRevealed(true);
 
@@ -22,9 +22,9 @@ export function VariantView({ variant }: { variant: Variant }) {
             <MessageCircleQuestionIcon className='mt-0.5 size-5 shrink-0 text-muted-foreground' />
             <div className='flex flex-col gap-2'>
               <p className='font-medium text-balance'>
-                <InlineMarkdown text={variant.question} />
+                <InlineMarkdown text={question.prompt} />
               </p>
-              {variant.strictModeSensitive ? <StrictModeBadge /> : null}
+              {question.strictModeSensitive ? <StrictModeBadge /> : null}
             </div>
           </div>
           {revealed ? null : (
@@ -37,9 +37,9 @@ export function VariantView({ variant }: { variant: Variant }) {
       </Card>
 
       <div className='grid gap-4 lg:grid-cols-2'>
-        <CodeBlock code={variant.source} fileName={variant.fileName} />
+        <CodeBlock code={question.source} fileName={question.fileName} />
         {revealed ? (
-          <PreviewHost component={variant.Component} />
+          <PreviewHost component={question.Component} />
         ) : (
           <LockedPreview onReveal={reveal} />
         )}
@@ -52,7 +52,7 @@ export function VariantView({ variant }: { variant: Variant }) {
           </CardHeader>
           <CardContent>
             <article className='explanation prose prose-sm max-w-none prose-neutral dark:prose-invert'>
-              <variant.Explanation />
+              <question.Explanation />
             </article>
           </CardContent>
         </Card>
