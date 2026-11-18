@@ -64,7 +64,7 @@ const questionSources = import.meta.glob<string>(
 );
 
 const LESSON_DIR = /^\/src\/lessons\/([^/]+)\//;
-const VARIANT_FILE = /\/(App(\d+))\.mdx$/;
+const QUESTION_FILE = /\/(App(\d+))\.mdx$/;
 
 function lessonIdOf(path: string) {
   const match = LESSON_DIR.exec(path);
@@ -88,7 +88,7 @@ function buildQuestions(lessonId: string): Question[] {
   return Object.entries(questionDocs)
     .filter(([path]) => lessonIdOf(path) === lessonId)
     .map(([path, doc]) => {
-      const [, name, number] = VARIANT_FILE.exec(path) ?? [];
+      const [, name, number] = QUESTION_FILE.exec(path) ?? [];
       const codePath = `/src/lessons/${lessonId}/${name}.tsx`;
       const Component = questionModules[codePath]?.[name];
 
