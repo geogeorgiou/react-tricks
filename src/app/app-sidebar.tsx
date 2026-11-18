@@ -17,7 +17,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { FeedbackButton } from '@/features/feedback/feedback-button';
-import { lessons } from '@/features/lessons/registry';
+import { lessonSections } from '@/features/lessons/registry';
 import { ThemeToggle } from '@/features/theme/theme-toggle';
 
 export function AppSidebar() {
@@ -67,29 +67,33 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup>
-          <SidebarGroupLabel>Lessons</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {lessons.map((lesson) => (
-                <SidebarMenuItem key={lesson.id}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={lessonMatch?.params.lessonId === lesson.id}
-                    tooltip={lesson.title}>
-                    <NavLink
-                      to={`/lessons/${lesson.id}`}
-                      onClick={closeOnMobile}>
-                      <BookOpenIcon />
-                      <span>{lesson.title}</span>
-                    </NavLink>
-                  </SidebarMenuButton>
-                  <SidebarMenuBadge>{lesson.questions.length}</SidebarMenuBadge>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {lessonSections.map((section) => (
+          <SidebarGroup key={section.id}>
+            <SidebarGroupLabel>{section.title}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu aria-label={section.title}>
+                {section.lessons.map((lesson) => (
+                  <SidebarMenuItem key={lesson.id}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={lessonMatch?.params.lessonId === lesson.id}
+                      tooltip={lesson.title}>
+                      <NavLink
+                        to={`/lessons/${lesson.id}`}
+                        onClick={closeOnMobile}>
+                        <BookOpenIcon />
+                        <span>{lesson.title}</span>
+                      </NavLink>
+                    </SidebarMenuButton>
+                    <SidebarMenuBadge>
+                      {lesson.questions.length}
+                    </SidebarMenuBadge>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
 
       <SidebarFooter>

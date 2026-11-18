@@ -1,10 +1,12 @@
 import type { MDXContent } from 'mdx/types';
 import type { ComponentType } from 'react';
 
+import { type SectionId, sections } from './sections';
+
 /**
  * Lessons are discovered from the file system:
  *
- *   src/lessons/<lesson-id>/index.mdx   lesson title, order, summary
+ *   src/lessons/<lesson-id>/index.mdx   lesson title, section, order, summary
  *   src/lessons/<lesson-id>/AppN.tsx    the question component (and its source)
  *   src/lessons/<lesson-id>/AppN.mdx    prompt + explanation for AppN
  *
@@ -14,6 +16,8 @@ import type { ComponentType } from 'react';
 
 export type LessonFrontmatter = {
   title: string;
+  /** Id of the Section the lesson is listed under, see `sections.ts` */
+  section: SectionId;
   order: number;
   summary: string;
 };
@@ -118,9 +122,15 @@ export const lessons: Lesson[] = Object.entries(lessonDocs)
   .map(([path, doc]) => {
     assertFrontmatter(path, doc.frontmatter, {
       title: 'string',
+      section: 'string',
       order: 'number',
       summary: 'string',
     });
+    if (!sections.some((section) => section.id === doc.frontmatter.section)) {
+      throw new Error(
+        `${path}: frontmatter "section" must be one of ${sections.map((section) => section.id).join(', ')}`,
+      );
+    }
     const id = lessonIdOf(path);
 
     return {
@@ -136,3 +146,13 @@ export const lessons: Lesson[] = Object.entries(lessonDocs)
 export function findLesson(id: string | undefined) {
   return lessons.find((lesson) => lesson.id === id);
 }
+
+export type LessonSection = (typeof sections)[number] & { lessons: Lesson[] };
+
+/** Sections in display order, each with its lessons; empty Sections are left out. */
+export const lessonSections: LessonSection[] = sections
+  .map((section) => ({
+    ...section,
+    lessons: lessons.filter((lesson) => lesson.section === section.id),
+  }))
+  .filter((section) => section.lessons.length > 0);

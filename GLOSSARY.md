@@ -4,6 +4,10 @@ An interactive dashboard of React interview trick questions. Learners predict wh
 
 ## Language
 
+**Section**:
+A named group of related Lessons, such as Effects or Memoization, shown as a heading in the sidebar so a learner can see the shape of the course at a glance. Every Lesson belongs to exactly one Section.
+_Avoid_: Category, group, track, chapter
+
 **Lesson**:
 A themed group of Questions around one area of React, such as console logging or `useEffect`. One Lesson may touch several related concepts.
 _Avoid_: Topic, module, chapter, category
