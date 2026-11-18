@@ -111,3 +111,15 @@ pnpm build
 ```
 
 `pnpm check:fix` formats and applies lint autofixes. Tooling choices are recorded in [ADR 0001](docs/adr/0001-adopt-vite-plus-toolchain.md).
+
+## GitHub Actions
+
+Workflows in `.github/` are linted by [zizmor](https://docs.zizmor.sh): locally with `pnpm lint:actions`, and in CI by `.github/workflows/zizmor.yml`. The CI job uploads SARIF to code scanning (Security tab) and doesn't fail on findings itself. Fix findings rather than suppressing them.
+
+- Pin every action to a full commit SHA with a version comment: `uses: owner/repo@<sha> # vX.Y.Z`. Dependabot (`.github/dependabot.yml`, weekly, 7-day cooldown) bumps both together.
+- Every `actions/checkout` sets `persist-credentials: false`.
+- Workflow-level `permissions` stay minimal; grant anything extra per job.
+- Dependabot opens routine update PRs. Use `pnpm actions:up` (actions-up, `scripts/actions-up.sh`) to update sooner or take a major bump by hand; it writes the same `sha # vX.Y.Z` pins with the same 7-day cooldown. `pnpm actions:outdated` only reports.
+- The zizmor version is pinned in `zizmor.yml` (`version:`). Dependabot doesn't update it: bump it by hand, alongside your local `brew upgrade zizmor`.
+
+`pnpm lint:actions` needs `brew install zizmor` and a GitHub token (`GH_TOKEN` or `gh auth login`) for its online audits.
