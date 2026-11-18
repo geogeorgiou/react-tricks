@@ -36,11 +36,11 @@ This repo is all about learning React in a better way and the nitty gritty stuff
 
 Pick a lesson from the sidebar. Each lesson has a tab per question, and the URL (`/lessons/console-log?tab=app2`) is shareable.
 
-Every tab shows the question and the lesson's real source code. Hit **Reveal answer** to:
+Every tab shows the question's prompt and its real source code. Hit **Reveal answer** to:
 
-- run the component live,
+- run the component live (the live preview),
 - capture its `console` output in the console panel,
-- read the explanation (expected output, why, takeaway).
+- read the answer (the expected output) and the explanation (why, then the takeaway).
 
 > **StrictMode:** the app runs inside `<StrictMode>`, which only does its double render / double effect checks in development. Lessons affected by it show a badge saying which mode you're in, so you know why `pnpm dev` and the deployed site can log differently.
 
@@ -52,7 +52,7 @@ Lessons are discovered from the file system. There's no registry to update:
 src/lessons/<lesson-id>/      folder name = URL slug (kebab-case)
   index.mdx                   title, order, summary + short intro
   App1.tsx                    the component, exported as `App1`
-  App1.mdx                    question + explanation for App1
+  App1.mdx                    prompt + answer + explanation for App1
   App2.tsx / App2.mdx         …and so on
 ```
 
@@ -73,7 +73,7 @@ Intro paragraph shown under the lesson title.
 ```mdx
 ---
 title: 'Short tab label'
-question: 'What is logged on the first click?'
+prompt: 'What is logged on the first click?'
 strictModeSensitive: true # optional: shows the StrictMode badge
 ---
 
@@ -84,7 +84,7 @@ strictModeSensitive: true # optional: shows the StrictMode badge
 ## Takeaway
 ```
 
-A lesson only shows up once it has an `index.mdx`, and a tab only once both `AppN.tsx` and `AppN.mdx` exist. Helper files such as `fake-api.ts` can live in the folder too. Hook lint rules (apart from the Rules of Hooks) are switched off under `src/lessons`, because lessons break them on purpose.
+A lesson only shows up once it has an `index.mdx`, and a question only once both `AppN.tsx` and `AppN.mdx` exist. Helper files such as `fake-api.ts` can live in the folder too. Hook lint rules (apart from the Rules of Hooks) are switched off under `src/lessons`, because lessons break them on purpose.
 
 ## How do I run this?
 

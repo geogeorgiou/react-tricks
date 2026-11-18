@@ -12,8 +12,8 @@ import {
 import { lessons } from '@/features/lessons/registry';
 
 export function OverviewPage() {
-  const variantCount = lessons.reduce(
-    (total, lesson) => total + lesson.variants.length,
+  const questionCount = lessons.reduce(
+    (total, lesson) => total + lesson.questions.length,
     0,
   );
 
@@ -24,7 +24,7 @@ export function OverviewPage() {
           React trick questions
         </h1>
         <p className='max-w-2xl text-muted-foreground'>
-          {lessons.length} lessons, {variantCount} questions. Read the code,
+          {lessons.length} lessons, {questionCount} questions. Read the code,
           guess what logs or re-renders, then reveal the live preview and the
           explanation.
         </p>
@@ -43,7 +43,7 @@ export function OverviewPage() {
               </CardHeader>
               <CardFooter className='mt-auto justify-between'>
                 <Badge variant='secondary'>
-                  {lesson.variants.length} questions
+                  {lesson.questions.length} questions
                 </Badge>
                 <ArrowRightIcon className='size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5' />
               </CardFooter>

@@ -83,7 +83,7 @@ export function AppSidebar() {
                       <span>{lesson.title}</span>
                     </NavLink>
                   </SidebarMenuButton>
-                  <SidebarMenuBadge>{lesson.variants.length}</SidebarMenuBadge>
+                  <SidebarMenuBadge>{lesson.questions.length}</SidebarMenuBadge>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>

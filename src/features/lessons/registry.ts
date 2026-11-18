@@ -5,10 +5,10 @@ import type { ComponentType } from 'react';
  * Lessons are discovered from the file system:
  *
  *   src/lessons/<lesson-id>/index.mdx   lesson title, order, summary
- *   src/lessons/<lesson-id>/AppN.tsx    the variant component (and its source)
- *   src/lessons/<lesson-id>/AppN.mdx    question + explanation for AppN
+ *   src/lessons/<lesson-id>/AppN.tsx    the question component (and its source)
+ *   src/lessons/<lesson-id>/AppN.mdx    prompt + explanation for AppN
  *
- * A lesson shows up once it has an index.mdx, and a variant once it has both
+ * A lesson shows up once it has an index.mdx, and a question once it has both
  * its .tsx and .mdx files.
  */
 
@@ -18,15 +18,15 @@ export type LessonFrontmatter = {
   summary: string;
 };
 
-export type VariantFrontmatter = {
+export type QuestionFrontmatter = {
   title: string;
-  question: string;
+  prompt: string;
   strictModeSensitive?: boolean;
 };
 
 type MdxModule<T> = { default: MDXContent; frontmatter: T };
 
-export type Variant = VariantFrontmatter & {
+export type Question = QuestionFrontmatter & {
   /** URL tab value, e.g. `app1` */
   id: string;
   /** File name shown above the code, e.g. `App1.tsx` */
@@ -40,7 +40,7 @@ export type Lesson = LessonFrontmatter & {
   /** Folder name, also the URL slug */
   id: string;
   Intro: MDXContent;
-  variants: Variant[];
+  questions: Question[];
 };
 
 const lessonDocs = import.meta.glob<MdxModule<LessonFrontmatter>>(
@@ -48,17 +48,17 @@ const lessonDocs = import.meta.glob<MdxModule<LessonFrontmatter>>(
   { eager: true },
 );
 
-const variantDocs = import.meta.glob<MdxModule<VariantFrontmatter>>(
+const questionDocs = import.meta.glob<MdxModule<QuestionFrontmatter>>(
   '/src/lessons/*/App*.mdx',
   { eager: true },
 );
 
-const variantModules = import.meta.glob<Record<string, ComponentType>>(
+const questionModules = import.meta.glob<Record<string, ComponentType>>(
   ['/src/lessons/*/App*.tsx', '!/src/lessons/**/*.test.tsx'],
   { eager: true },
 );
 
-const variantSources = import.meta.glob<string>(
+const questionSources = import.meta.glob<string>(
   ['/src/lessons/*/App*.tsx', '!/src/lessons/**/*.test.tsx'],
   { eager: true, query: '?raw', import: 'default' },
 );
@@ -84,34 +84,34 @@ function assertFrontmatter(
   }
 }
 
-function buildVariants(lessonId: string): Variant[] {
-  return Object.entries(variantDocs)
+function buildQuestions(lessonId: string): Question[] {
+  return Object.entries(questionDocs)
     .filter(([path]) => lessonIdOf(path) === lessonId)
     .map(([path, doc]) => {
       const [, name, number] = VARIANT_FILE.exec(path) ?? [];
       const codePath = `/src/lessons/${lessonId}/${name}.tsx`;
-      const Component = variantModules[codePath]?.[name];
+      const Component = questionModules[codePath]?.[name];
 
       if (!Component) {
         throw new Error(`${path}: expected ${codePath} to export ${name}`);
       }
       assertFrontmatter(path, doc.frontmatter, {
         title: 'string',
-        question: 'string',
+        prompt: 'string',
       });
 
       return {
         ...doc.frontmatter,
         id: name.toLowerCase(),
         fileName: `${name}.tsx`,
-        source: variantSources[codePath],
+        source: questionSources[codePath],
         Component,
         Explanation: doc.default,
         order: Number(number),
       };
     })
     .sort((a, b) => a.order - b.order)
-    .map(({ order: _order, ...variant }) => variant);
+    .map(({ order: _order, ...question }) => question);
 }
 
 export const lessons: Lesson[] = Object.entries(lessonDocs)
@@ -127,10 +127,10 @@ export const lessons: Lesson[] = Object.entries(lessonDocs)
       ...doc.frontmatter,
       id,
       Intro: doc.default,
-      variants: buildVariants(id),
+      questions: buildQuestions(id),
     };
   })
-  .filter((lesson) => lesson.variants.length > 0)
+  .filter((lesson) => lesson.questions.length > 0)
   .sort((a, b) => a.order - b.order);
 
 export function findLesson(id: string | undefined) {
