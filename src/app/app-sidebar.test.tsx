@@ -9,11 +9,14 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 
 import { AppSidebar } from './app-sidebar';
 
-function renderSidebar({ children }: { children?: ReactNode } = {}) {
+function renderSidebar({
+  sidebarOpen = true,
+  children,
+}: { sidebarOpen?: boolean; children?: ReactNode } = {}) {
   return render(
     <MemoryRouter initialEntries={['/']}>
       <TooltipProvider>
-        <SidebarProvider>
+        <SidebarProvider defaultOpen={sidebarOpen}>
           <AppSidebar />
           {children}
         </SidebarProvider>
@@ -82,5 +85,15 @@ describe('AppSidebar', () => {
       'data-active',
       'true',
     );
+  });
+
+  test('keeps every Section open on the icon rail', async () => {
+    const user = userEvent.setup();
+    renderSidebar({ sidebarOpen: false });
+    const memoization = sectionOf('Memoization');
+
+    await user.click(memoization.trigger);
+    expect(memoization.trigger).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('link', { name: 'useMemo' })).toBeInTheDocument();
   });
 });
