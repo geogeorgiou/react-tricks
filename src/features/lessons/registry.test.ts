@@ -3,15 +3,15 @@ import { describe, expect, test } from 'vite-plus/test';
 import { SECTION_TITLES, findLesson, lessons, sections } from './registry';
 
 describe('lesson registry', () => {
-  test('discovers every lesson folder, Section by Section, each in order', () => {
+  test('discovers every lesson folder, in course order across Sections', () => {
     expect(lessons.map((lesson) => lesson.id)).toEqual([
       'console-log',
-      'will-re-render',
-      'context',
       'use-effect',
       'use-effect-set-interval',
       'use-memo',
       'use-callback',
+      'will-re-render',
+      'context',
       'use',
     ]);
   });
@@ -28,7 +28,12 @@ describe('lesson registry', () => {
       ['Memoization', ['use-memo', 'use-callback']],
       ['New in React 19', ['use']],
     ]);
-    expect(sections.flatMap((section) => section.lessons)).toEqual(lessons);
+    expect(
+      sections
+        .flatMap((section) => section.lessons)
+        .map((lesson) => lesson.id)
+        .sort(),
+    ).toEqual(lessons.map((lesson) => lesson.id).sort());
   });
 
   test('every Section is a known Section title', () => {

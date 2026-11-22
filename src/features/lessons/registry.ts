@@ -13,8 +13,9 @@ import type { ComponentType } from 'react';
  */
 
 /**
- * Sections in sidebar order. A Lesson names its Section in frontmatter, and
- * its `order` counts within that Section.
+ * Sections in sidebar order. A Lesson names its Section in frontmatter. Its
+ * `order` places it across the whole course (the overview and search), and a
+ * Section lists its Lessons in that same relative order.
  */
 export const SECTION_TITLES = [
   'State & rendering',
@@ -137,11 +138,7 @@ function isSectionTitle(value: unknown): value is SectionTitle {
   return SECTION_TITLES.some((title) => title === value);
 }
 
-function sectionIndex(lesson: Lesson) {
-  return SECTION_TITLES.indexOf(lesson.section);
-}
-
-/** Every Lesson, Section by Section, each Section in `order`. */
+/** Every Lesson across the course, in `order`. */
 export const lessons: Lesson[] = Object.entries(lessonDocs)
   .map(([path, doc]) => {
     assertFrontmatter(path, doc.frontmatter, {
@@ -165,9 +162,12 @@ export const lessons: Lesson[] = Object.entries(lessonDocs)
     };
   })
   .filter((lesson) => lesson.questions.length > 0)
-  .sort((a, b) => sectionIndex(a) - sectionIndex(b) || a.order - b.order);
+  .sort((a, b) => a.order - b.order);
 
-/** Sections in sidebar order, leaving out any that have no Lessons yet. */
+/**
+ * Sections in sidebar order, each with its Lessons in `order`, leaving out any
+ * Section that has no Lessons yet.
+ */
 export const sections: Section[] = SECTION_TITLES.map((title) => ({
   title,
   lessons: lessons.filter((lesson) => lesson.section === title),

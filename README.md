@@ -62,7 +62,7 @@ src/lessons/<lesson-id>/      folder name = URL slug (kebab-case)
 ---
 title: 'Console Log'
 section: 'State & rendering' # one of SECTION_TITLES in registry.ts
-order: 1 # position within its Section
+order: 1 # position across the course; a Section keeps this order
 summary: 'Shown on the overview card.'
 ---
 
