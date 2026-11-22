@@ -4,7 +4,7 @@ import type { ComponentType } from 'react';
 /**
  * Lessons are discovered from the file system:
  *
- *   src/lessons/<lesson-id>/index.mdx   lesson title, order, summary
+ *   src/lessons/<lesson-id>/index.mdx   lesson title, section, order, summary
  *   src/lessons/<lesson-id>/AppN.tsx    the question component (and its source)
  *   src/lessons/<lesson-id>/AppN.mdx    prompt + explanation for AppN
  *
@@ -12,8 +12,22 @@ import type { ComponentType } from 'react';
  * its .tsx and .mdx files.
  */
 
+/**
+ * Sections in sidebar order. A Lesson names its Section in frontmatter, and
+ * its `order` counts within that Section.
+ */
+export const SECTION_TITLES = [
+  'State & rendering',
+  'Effects',
+  'Memoization',
+  'New in React 19',
+] as const;
+
+export type SectionTitle = (typeof SECTION_TITLES)[number];
+
 export type LessonFrontmatter = {
   title: string;
+  section: SectionTitle;
   order: number;
   summary: string;
 };
@@ -114,13 +128,33 @@ function buildQuestions(lessonId: string): Question[] {
     .map(({ order: _order, ...question }) => question);
 }
 
+export type Section = {
+  title: SectionTitle;
+  lessons: Lesson[];
+};
+
+function isSectionTitle(value: unknown): value is SectionTitle {
+  return SECTION_TITLES.some((title) => title === value);
+}
+
+function sectionIndex(lesson: Lesson) {
+  return SECTION_TITLES.indexOf(lesson.section);
+}
+
+/** Every Lesson, Section by Section, each Section in `order`. */
 export const lessons: Lesson[] = Object.entries(lessonDocs)
   .map(([path, doc]) => {
     assertFrontmatter(path, doc.frontmatter, {
       title: 'string',
+      section: 'string',
       order: 'number',
       summary: 'string',
     });
+    if (!isSectionTitle(doc.frontmatter.section)) {
+      throw new Error(
+        `${path}: frontmatter "section" must be one of ${SECTION_TITLES.join(', ')}`,
+      );
+    }
     const id = lessonIdOf(path);
 
     return {
@@ -131,7 +165,13 @@ export const lessons: Lesson[] = Object.entries(lessonDocs)
     };
   })
   .filter((lesson) => lesson.questions.length > 0)
-  .sort((a, b) => a.order - b.order);
+  .sort((a, b) => sectionIndex(a) - sectionIndex(b) || a.order - b.order);
+
+/** Sections in sidebar order, leaving out any that have no Lessons yet. */
+export const sections: Section[] = SECTION_TITLES.map((title) => ({
+  title,
+  lessons: lessons.filter((lesson) => lesson.section === title),
+})).filter((section) => section.lessons.length > 0);
 
 export function findLesson(id: string | undefined) {
   return lessons.find((lesson) => lesson.id === id);
