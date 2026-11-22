@@ -18,7 +18,7 @@ The repo is `geogeorgiou/react-tricks` (the `origin` remote); `gh` picks it up w
 
 ## Labels the agent workflows own
 
-Labels starting `agent:` (and `spec:<n>`) drive the workflows in `.github/workflows/agent-*.yml`: adding `agent:explore`, `agent:implement`, `agent:implement-spec` or `agent:review` starts a run, and the workflows move `agent:in-progress`, `agent:queued` and `agent:blocked` themselves. Add a trigger label only when the user asks for that run, and leave the rest to the workflows.
+Labels starting `agent:` (and `spec:<n>`) drive the workflows in `.github/workflows/agent-*.yml`: adding `agent:explore`, `agent:implement`, `agent:implement-spec` or `agent:review` starts a run, and the workflows move `agent:in-progress`, `agent:queued`, `agent:blocked` and `needs-a-human` themselves. The workflows also chain: explore adds `agent:implement` to an issue it tags `easy-call` (anything else gets `needs-a-human`), and the implementer adds `agent:review` to the PR it opens. Add a trigger label only when the user asks for that run, and leave the rest to the workflows.
 
 ## Pull requests as a triage surface
 

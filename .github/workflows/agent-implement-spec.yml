@@ -277,13 +277,11 @@ jobs:
             --jq '"# " + .title + "\n\n" + .body' > /tmp/spec.md
           cat /tmp/spec.md
 
-      # Installs vp, Node (from .node-version) and pnpm, then runs `vp install`.
-      # Claude Code comes from the lockfile; `pnpm exec` puts it on PATH.
-      - name: Setup Vite+ and install dependencies
-        uses: voidzero-dev/setup-vp@cab1ab9eaff52d4857875f4f2c016e36af8f2c76 # v1.22.0
-        with:
-          node-version-file: .node-version
-          cache: true
+      # Node, pnpm, the repo's dependencies, Claude Code and agent-browser.
+      # The two tools land in $RUNNER_TEMP/agent-tools/bin, off PATH: only the
+      # agent's own step below puts them on it (see the action).
+      - name: Set up the agent
+        uses: ./.github/actions/setup-agent # zizmor: ignore[self-repository] `./` is the documented local-action form
 
       - name: Decompose the spec into a queue
         env:
@@ -291,7 +289,7 @@ jobs:
           OUTPUT_DIR: ${{ runner.temp }}
         # Reads only. The queue comes back as queue.json, shaped and validated
         # by .sandcastle/agent-workflows/implement-spec/decomposition-schema.ts.
-        run: pnpm exec tsx .sandcastle/agent-workflows/implement-spec/decompose.ts
+        run: PATH="$RUNNER_TEMP/agent-tools/bin:$PATH" pnpm exec tsx .sandcastle/agent-workflows/implement-spec/decompose.ts
 
       - name: Write the queue as issues
         env:
@@ -379,13 +377,11 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      # Installs vp, Node (from .node-version) and pnpm, then runs `vp install`.
-      # Claude Code comes from the lockfile; `pnpm exec` puts it on PATH.
-      - name: Setup Vite+ and install dependencies
-        uses: voidzero-dev/setup-vp@cab1ab9eaff52d4857875f4f2c016e36af8f2c76 # v1.22.0
-        with:
-          node-version-file: .node-version
-          cache: true
+      # Node, pnpm, the repo's dependencies, Claude Code and agent-browser.
+      # The two tools land in $RUNNER_TEMP/agent-tools/bin, off PATH: only the
+      # agent's own step below puts them on it (see the action).
+      - name: Set up the agent
+        uses: ./.github/actions/setup-agent # zizmor: ignore[self-repository] `./` is the documented local-action form
 
       - name: Claim the ticket
         # Moving the label first is what stops a cron tick that lands during a
@@ -439,15 +435,15 @@ jobs:
       - name: Build the ticket
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-        run: pnpm exec tsx .sandcastle/agent-workflows/implement-spec/build.ts
+        run: PATH="$RUNNER_TEMP/agent-tools/bin:$PATH" pnpm exec tsx .sandcastle/agent-workflows/implement-spec/build.ts
 
       - name: Verify the agent's work
-        # This repo has no git hooks (docs/adr/0001): CI is the gate. So the
-        # checks ci.yml runs gate the push here too. No token in this step: it
-        # runs code the agent wrote.
+        # This repo has no git hooks (docs/adr/0001): CI is the gate. So two
+        # of the checks ci.yml runs gate the push here too. The test suite is
+        # left to the reviewer, which fixes what fails, and to ci.yml on the
+        # PR. No token in this step: it runs code the agent wrote.
         run: |
           pnpm check
-          pnpm test --run
           pnpm build
 
       - name: Check the agent committed

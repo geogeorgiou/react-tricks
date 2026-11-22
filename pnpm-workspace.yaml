@@ -26,8 +26,7 @@ trustPolicyExclude:
   - semver@6.3.1
 # For the agent workflows. esbuild (via tsx): its postinstall only optimises
 # the binary path, and the platform binary ships as an optional dependency.
-# @anthropic-ai/claude-code: its postinstall copies the platform binary from
-# an optional dependency into place, with no network access.
+# Claude Code and agent-browser are not dependencies: the workflows install
+# them globally (.github/actions/setup-agent).
 allowBuilds:
-  '@anthropic-ai/claude-code': true
   esbuild: false

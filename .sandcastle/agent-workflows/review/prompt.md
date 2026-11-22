@@ -8,27 +8,51 @@ Review it with the code-review skill, .agents/skills/code-review/SKILL.md:
 - standards: CLAUDE.md, GLOSSARY.md, docs/adr/, and the lint config in
   vite.config.ts
 
-Leave the human reviewer as little as possible. Fix every finding you can on
-`{{BRANCH}}`, one commit per fix. This repo has no git hooks: before every
-commit, run `pnpm check`, `pnpm test --run` and `pnpm build`, and commit only
-when all three pass. The workflow runs them again, then pushes your commits. Leave `.github/` untouched.
+## Run the test suite
 
-Every finding you leave unfixed becomes an inline comment on its file and
-line. You will be asked for them as structured output.
+The implementer does not run the whole test suite; you do. Run
+`pnpm test --run` once before you start fixing, and once more after your last
+fix. Every failing test is a finding: fix it like any other.
+
+## Fix everything a person does not have to decide
+
+The human reviewer gets **decisions** only: product behaviour the ticket
+leaves open, or a trade-off between two documented rules. Everything else you
+fix on `{{BRANCH}}`, however large: failing tests, writing the tests the
+change lacks, naming code in GLOSSARY.md's words, moving behaviour under
+src/features/ behind an entry point a test can call, extracting a shared
+component. Commit each fix on its own. This repo has no git hooks: run
+`pnpm check` before each commit, and the tests a fix touches
+(`pnpm test --run <file>`). `pnpm build` must pass too. The workflow runs
+`pnpm check`, `pnpm test --run` and `pnpm build` once after you finish, then
+pushes your commits.
+Leave `.github/` untouched.
+
+Every finding you leave becomes an inline comment on the first line it
+concerns, one comment per finding. You will be asked for them as structured
+output. Its body says what decision it needs.
+
+## The verdict
 
 Write your verdict on the branch, after your fixes, to /tmp/review-verdict.md:
 
     ## Standards: PASS | CHANGES REQUESTED
-    One line of reasoning, then the findings, worst first: each one fixed
-    (its commit) or left (its file and line), citing the rule by heading.
+    One line of reasoning, then each finding you fixed, worst first: its
+    commit, citing the rule by heading.
 
     ## Spec: PASS | CHANGES REQUESTED
-    One line of reasoning, then the findings, fixed or left.
+    One line of reasoning, then each finding you fixed.
 
     ## Rules this review wanted and could not find
     Anything you wanted to fail the change for that no standard covers.
     The retro reads this list.
 
-When the change shows in the UI, save screenshots as PNGs in /tmp/evidence/.
-Reference each in the verdict by its absolute path, e.g.
+The workflow adds the findings you left to each section, from your structured
+output. They appear there once, not in your text.
+
+## Evidence
+
+When your fixes change the UI, save an after screenshot of each as a PNG in
+/tmp/evidence/. The PR's before is already in its body. Reference each
+screenshot in the verdict by its absolute path, e.g.
 `![after](/tmp/evidence/after.png)`. The workflow uploads them.
