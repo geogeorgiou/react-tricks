@@ -2,19 +2,21 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 import { Link, MemoryRouter } from 'react-router';
-import { describe, expect, test } from 'vite-plus/test';
+import { beforeEach, describe, expect, test } from 'vite-plus/test';
 
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { CLOSED_SECTIONS_KEY } from '@/features/sections/closed-sections';
 
 import { AppSidebar } from './app-sidebar';
 
 function renderSidebar({
   sidebarOpen = true,
+  path = '/',
   children,
-}: { sidebarOpen?: boolean; children?: ReactNode } = {}) {
+}: { sidebarOpen?: boolean; path?: string; children?: ReactNode } = {}) {
   return render(
-    <MemoryRouter initialEntries={['/']}>
+    <MemoryRouter initialEntries={[path]}>
       <TooltipProvider>
         <SidebarProvider defaultOpen={sidebarOpen}>
           <AppSidebar />
@@ -33,6 +35,10 @@ function sectionOf(title: string) {
 }
 
 describe('AppSidebar', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
   test('shows each Section as a heading over its Lessons, all open', () => {
     renderSidebar();
 
@@ -95,5 +101,56 @@ describe('AppSidebar', () => {
     await user.click(memoization.trigger);
     expect(memoization.trigger).toHaveAttribute('aria-expanded', 'true');
     expect(screen.getByRole('link', { name: 'useMemo' })).toBeInTheDocument();
+
+    // The click on the rail is not remembered once the sidebar expands.
+    await user.click(screen.getByRole('button', { name: 'Toggle Sidebar' }));
+    expect(sectionOf('Memoization').trigger).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    );
+  });
+
+  test('remembers closed Sections across a reload', async () => {
+    const user = userEvent.setup();
+    const { unmount } = renderSidebar();
+
+    await user.click(sectionOf('Memoization').trigger);
+    expect(JSON.parse(localStorage.getItem(CLOSED_SECTIONS_KEY)!)).toEqual([
+      'Memoization',
+    ]);
+    unmount();
+
+    renderSidebar();
+    expect(sectionOf('Memoization').trigger).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    );
+    expect(sectionOf('Effects').trigger).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    );
+
+    await user.click(sectionOf('Memoization').trigger);
+    expect(JSON.parse(localStorage.getItem(CLOSED_SECTIONS_KEY)!)).toEqual([]);
+  });
+
+  test('opens a remembered closed Section when loading one of its Lessons', () => {
+    localStorage.setItem(
+      CLOSED_SECTIONS_KEY,
+      JSON.stringify(['Memoization', 'Effects']),
+    );
+    renderSidebar({ path: '/lessons/use-memo' });
+
+    expect(sectionOf('Memoization').trigger).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    );
+    expect(sectionOf('Effects').trigger).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    );
+    expect(JSON.parse(localStorage.getItem(CLOSED_SECTIONS_KEY)!)).toEqual([
+      'Effects',
+    ]);
   });
 });

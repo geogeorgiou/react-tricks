@@ -4,7 +4,6 @@ import {
   ChevronDownIcon,
   LayoutGridIcon,
 } from 'lucide-react';
-import { useState } from 'react';
 import { NavLink, useMatch } from 'react-router';
 
 import {
@@ -28,7 +27,12 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { FeedbackButton } from '@/features/feedback/feedback-button';
-import { sections, type Section } from '@/features/lessons/registry';
+import {
+  findLesson,
+  sections,
+  type Section,
+} from '@/features/lessons/registry';
+import { useClosedSections } from '@/features/sections/closed-sections';
 import { ThemeToggle } from '@/features/theme/theme-toggle';
 
 export function AppSidebar() {
@@ -36,6 +40,10 @@ export function AppSidebar() {
   const isOverview = useMatch('/') !== null;
   const lessonMatch = useMatch('/lessons/:lessonId');
   const closeOnMobile = () => setOpenMobile(false);
+  const activeLessonId = lessonMatch?.params.lessonId;
+  const { isOpen, setSectionOpen } = useClosedSections(
+    findLesson(activeLessonId)?.section,
+  );
 
   return (
     <Sidebar collapsible='icon'>
@@ -82,7 +90,9 @@ export function AppSidebar() {
           <SidebarSection
             key={section.title}
             section={section}
-            activeLessonId={lessonMatch?.params.lessonId}
+            activeLessonId={activeLessonId}
+            open={isOpen(section.title)}
+            onOpenChange={(open) => setSectionOpen(section.title, open)}
             onNavigate={closeOnMobile}
           />
         ))}
@@ -106,23 +116,17 @@ export function AppSidebar() {
 function SidebarSection({
   section,
   activeLessonId,
+  open,
+  onOpenChange,
   onNavigate,
 }: {
   section: Section;
   activeLessonId: string | undefined;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   onNavigate: () => void;
 }) {
   const { state, isMobile } = useSidebar();
-  const [open, setOpen] = useState(true);
-  // Navigating to a Lesson reopens its Section, so the active Lesson is never
-  // hidden behind a heading the learner closed earlier.
-  const [shownLessonId, setShownLessonId] = useState(activeLessonId);
-  if (shownLessonId !== activeLessonId) {
-    setShownLessonId(activeLessonId);
-    if (section.lessons.some((lesson) => lesson.id === activeLessonId)) {
-      setOpen(true);
-    }
-  }
   // The icon rail hides Section headings, so a closed Section would leave its
   // Lessons unreachable there. Show them all while the rail is collapsed.
   const isIconRail = state === 'collapsed' && !isMobile;
@@ -130,7 +134,7 @@ function SidebarSection({
   return (
     <Collapsible
       open={open || isIconRail}
-      onOpenChange={setOpen}
+      onOpenChange={isIconRail ? undefined : onOpenChange}
       className='group/section'>
       <SidebarGroup>
         <SidebarGroupLabel
