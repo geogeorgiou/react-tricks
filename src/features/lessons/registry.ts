@@ -134,7 +134,7 @@ export type Section = {
   lessons: Lesson[];
 };
 
-function isSectionTitle(value: unknown): value is SectionTitle {
+export function isSectionTitle(value: unknown): value is SectionTitle {
   return SECTION_TITLES.some((title) => title === value);
 }
 

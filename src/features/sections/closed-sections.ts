@@ -1,13 +1,9 @@
 import { useEffect, useState } from 'react';
 
-import { SECTION_TITLES, type SectionTitle } from '@/features/lessons/registry';
+import { isSectionTitle, type SectionTitle } from '@/features/lessons/registry';
 
 /** localStorage key holding the titles of the Sections a learner closed. */
 export const CLOSED_SECTIONS_KEY = 'sidebar_closed_sections';
-
-function isSectionTitle(value: unknown): value is SectionTitle {
-  return SECTION_TITLES.some((title) => title === value);
-}
 
 export function readClosedSections(): SectionTitle[] {
   try {
@@ -54,12 +50,9 @@ export function useClosedSections(activeSection: SectionTitle | undefined) {
   return {
     isOpen: (title: SectionTitle) => !closed.includes(title),
     setSectionOpen: (title: SectionTitle, open: boolean) =>
-      setClosed((current) =>
-        open
-          ? current.filter((closedTitle) => closedTitle !== title)
-          : current.includes(title)
-            ? current
-            : [...current, title],
-      ),
+      setClosed((current) => {
+        const others = current.filter((closedTitle) => closedTitle !== title);
+        return open ? others : [...others, title];
+      }),
   };
 }
