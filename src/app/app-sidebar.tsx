@@ -114,6 +114,15 @@ function SidebarSection({
 }) {
   const { state, isMobile } = useSidebar();
   const [open, setOpen] = useState(true);
+  // Navigating to a Lesson reopens its Section, so the active Lesson is never
+  // hidden behind a heading the learner closed earlier.
+  const [shownLessonId, setShownLessonId] = useState(activeLessonId);
+  if (shownLessonId !== activeLessonId) {
+    setShownLessonId(activeLessonId);
+    if (section.lessons.some((lesson) => lesson.id === activeLessonId)) {
+      setOpen(true);
+    }
+  }
   // The icon rail hides Section headings, so a closed Section would leave its
   // Lessons unreachable there. Show them all while the rail is collapsed.
   const isIconRail = state === 'collapsed' && !isMobile;

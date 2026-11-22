@@ -1,6 +1,7 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter } from 'react-router';
+import type { ReactNode } from 'react';
+import { Link, MemoryRouter } from 'react-router';
 import { describe, expect, test } from 'vite-plus/test';
 
 import { SidebarProvider } from '@/components/ui/sidebar';
@@ -8,12 +9,13 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 
 import { AppSidebar } from './app-sidebar';
 
-function renderSidebar() {
+function renderSidebar({ children }: { children?: ReactNode } = {}) {
   return render(
     <MemoryRouter initialEntries={['/']}>
       <TooltipProvider>
         <SidebarProvider>
           <AppSidebar />
+          {children}
         </SidebarProvider>
       </TooltipProvider>
     </MemoryRouter>,
@@ -62,5 +64,23 @@ describe('AppSidebar', () => {
 
     await user.click(memoization.trigger);
     expect(screen.getByRole('link', { name: 'useMemo' })).toBeInTheDocument();
+  });
+
+  test('reopens a closed Section when its Lesson becomes active', async () => {
+    const user = userEvent.setup();
+    renderSidebar({
+      children: <Link to='/lessons/use-memo'>Go to useMemo</Link>,
+    });
+    const memoization = sectionOf('Memoization');
+
+    await user.click(memoization.trigger);
+    expect(memoization.trigger).toHaveAttribute('aria-expanded', 'false');
+
+    await user.click(screen.getByRole('link', { name: 'Go to useMemo' }));
+    expect(memoization.trigger).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('link', { name: 'useMemo' })).toHaveAttribute(
+      'data-active',
+      'true',
+    );
   });
 });
