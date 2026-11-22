@@ -11,8 +11,8 @@ Review it with the code-review skill, .agents/skills/code-review/SKILL.md:
 ## Run the test suite
 
 The implementer does not run the whole test suite; you do. Run
-`pnpm test --run` before you start fixing. Every failing test is a finding:
-fix it like any other.
+`pnpm test --run` once before you start fixing, and once more after your last
+fix. Every failing test is a finding: fix it like any other.
 
 ## Fix everything a person does not have to decide
 
@@ -21,9 +21,11 @@ leaves open, or a trade-off between two documented rules. Everything else you
 fix on `{{BRANCH}}`, however large: failing tests, writing the tests the
 change lacks, naming code in GLOSSARY.md's words, moving behaviour under
 src/features/ behind an entry point a test can call, extracting a shared
-component. Commit each fix on its own. This repo has no git hooks: a fix is
-done when `pnpm check`, `pnpm test --run` and `pnpm build` all pass, and you
-commit only then. The workflow runs them again, then pushes your commits.
+component. Commit each fix on its own. This repo has no git hooks: run
+`pnpm check` before each commit, and the tests a fix touches
+(`pnpm test --run <file>`). `pnpm build` must pass too. The workflow runs
+`pnpm check`, `pnpm test --run` and `pnpm build` once after you finish, then
+pushes your commits.
 Leave `.github/` untouched.
 
 Every finding you leave becomes an inline comment on the first line it

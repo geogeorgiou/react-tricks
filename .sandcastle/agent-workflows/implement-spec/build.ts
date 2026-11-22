@@ -5,8 +5,8 @@ import { noSandbox } from '@ai-hero/sandcastle/sandboxes/no-sandbox';
 
 import { claudeAgent } from '../shared/common';
 
-// Like the one-off implementer: the agent edits and commits, running the
-// repo's checks first; the workflow checks again, pushes and opens the PR.
+// Like the one-off implementer: the agent edits and commits, through the
+// pre-commit hook; the workflow pushes and opens the PR.
 await sandcastle.run({
   name: 'build-ticket',
   agent: claudeAgent(),
