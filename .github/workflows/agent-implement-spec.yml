@@ -442,12 +442,12 @@ jobs:
         run: pnpm exec tsx .sandcastle/agent-workflows/implement-spec/build.ts
 
       - name: Verify the agent's work
-        # This repo has no git hooks (docs/adr/0001): CI is the gate. So the
-        # checks ci.yml runs gate the push here too. No token in this step: it
-        # runs code the agent wrote.
+        # This repo has no git hooks (docs/adr/0001): CI is the gate. So two
+        # of the checks ci.yml runs gate the push here too. The test suite is
+        # left to the reviewer, which fixes what fails, and to ci.yml on the
+        # PR. No token in this step: it runs code the agent wrote.
         run: |
           pnpm check
-          pnpm test --run
           pnpm build
 
       - name: Check the agent committed

@@ -4,7 +4,14 @@ name: Agent — Review A Pull Request
 # built.
 #
 # WHAT TRIGGERS IT
-#   Someone puts the `agent:review` label on a pull request.
+#   Someone puts the `agent:review` label on a pull request. The
+#   implementer does this itself for every pull request it opens, and so does
+#   agent-implement-spec.yml. Add it by hand to review again, or when that
+#   hand-off failed.
+#
+#   The implementers do not run the test suite. This workflow does: the agent
+#   runs `pnpm test --run` and fixes what fails, and the step before the push
+#   runs it again.
 #
 # THE POINT OF THIS FILE: IT IS MEMORY-LESS
 #   This workflow shares nothing with the implementer run. No session, no
@@ -89,7 +96,7 @@ jobs:
   review:
     if: github.event.label.name == 'agent:review'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
 
     env:
       GH_REPO: ${{ github.repository }}

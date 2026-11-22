@@ -11,12 +11,12 @@ and lesson MDX in GLOSSARY.md's words.
 
 - Follow the structure already in src/: app behaviour under src/features/,
   each Lesson's Questions under src/lessons/<lesson>/.
-- Ship tests with the code. End with more passing tests than you started
-  with, and none failing.
-- Before every commit, run `pnpm check`, `pnpm test --run` and `pnpm build`,
-  and commit only when all three pass. This repo has no git hooks; the
-  workflow runs the same three before it pushes, and a failure there parks
-  the ticket.
+- Ship tests with the code. You may run the tests you write or touch
+  (`pnpm test --run <file>`) while you work, but do not run the whole suite:
+  the reviewer and CI do that, and the reviewer fixes what fails.
+- Before every commit, run `pnpm check` and `pnpm build`, and commit only
+  when both pass. This repo has no git hooks; the workflow runs the same two
+  before it pushes, and a failure there parks the ticket.
 - Commit with `git commit` on the current branch. Do not add git hooks or
   change `core.hooksPath`.
 - The review workflow checks you against the ticket's "Done when". Reread it
