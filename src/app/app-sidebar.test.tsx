@@ -1,7 +1,7 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router';
-import { beforeEach, describe, expect, test } from 'vite-plus/test';
+import { describe, expect, test } from 'vite-plus/test';
 
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -28,16 +28,6 @@ function sectionOf(title: string) {
 }
 
 describe('AppSidebar', () => {
-  beforeEach(() => {
-    // jsdom has no matchMedia; the sidebar's mobile hook reads it.
-    window.matchMedia ??= ((query: string) => ({
-      matches: false,
-      media: query,
-      addEventListener: () => {},
-      removeEventListener: () => {},
-    })) as unknown as typeof window.matchMedia;
-  });
-
   test('shows each Section as a heading over its Lessons, all open', () => {
     renderSidebar();
 

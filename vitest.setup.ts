@@ -10,6 +10,14 @@ globalThis.ResizeObserver ??= class {
   disconnect() {}
 };
 
+// jsdom has no matchMedia; the sidebar's mobile hook reads it.
+window.matchMedia ??= ((query: string) => ({
+  matches: false,
+  media: query,
+  addEventListener: () => {},
+  removeEventListener: () => {},
+})) as unknown as typeof window.matchMedia;
+
 afterEach(() => {
   cleanup();
 });

@@ -44,13 +44,6 @@ describe('FeedbackButton', () => {
   const fetchMock = vi.fn<typeof fetch>();
 
   beforeEach(() => {
-    // jsdom has no matchMedia; the sidebar's mobile hook reads it.
-    window.matchMedia ??= ((query: string) => ({
-      matches: false,
-      media: query,
-      addEventListener: () => {},
-      removeEventListener: () => {},
-    })) as unknown as typeof window.matchMedia;
     vi.stubGlobal('fetch', fetchMock);
   });
 
