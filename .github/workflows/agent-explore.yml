@@ -162,14 +162,12 @@ jobs:
             gh issue edit "$n" --add-label "agent:in-progress"
           done
 
-      # Installs vp, Node (from .node-version) and pnpm, then runs `vp install`.
-      # Claude Code comes from the lockfile; `pnpm exec` puts it on PATH.
-      - name: Setup Vite+ and install dependencies
+      # Node, pnpm, the repo's dependencies, Claude Code and agent-browser.
+      # The two tools land in $RUNNER_TEMP/agent-tools/bin, off PATH: only the
+      # agent's own step below puts them on it (see the action).
+      - name: Set up the agent
         if: steps.batch.outputs.numbers != '[]'
-        uses: voidzero-dev/setup-vp@cab1ab9eaff52d4857875f4f2c016e36af8f2c76 # v1.22.0
-        with:
-          node-version-file: .node-version
-          cache: true
+        uses: ./.github/actions/setup-agent # zizmor: ignore[self-repository] `./` is the documented local-action form
 
       - name: Explore
         if: steps.batch.outputs.numbers != '[]'
@@ -178,7 +176,7 @@ jobs:
           OUTPUT_DIR: ${{ runner.temp }}
         # The plan comes back as plan.json, shaped and validated by
         # .sandcastle/agent-workflows/explore/plan-schema.ts.
-        run: pnpm exec tsx .sandcastle/agent-workflows/explore/explore.ts
+        run: PATH="$RUNNER_TEMP/agent-tools/bin:$PATH" pnpm exec tsx .sandcastle/agent-workflows/explore/explore.ts
 
       - name: Hand the plan to the apply job
         id: plan

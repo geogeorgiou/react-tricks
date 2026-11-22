@@ -60,8 +60,8 @@ name: Agent — Implement A Ticket
 #
 # WHO COMMITS
 #   The agent does. This repo has no git hooks (docs/adr/0001), so the agent
-#   runs `pnpm check` and `pnpm build` itself before each commit, and a step
-#   with no token runs them again before the push. That step runs code from
+#   runs `pnpm check` itself before each commit, its fast loop, and a step
+#   with no token runs `pnpm check` and `pnpm build` once before the push. That step runs code from
 #   the repo, so every git command that holds a token switches hooks off with
 #   `core.hooksPath=/dev/null` all the same.
 #
@@ -128,13 +128,11 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      # Installs vp, Node (from .node-version) and pnpm, then runs `vp install`.
-      # Claude Code comes from the lockfile; `pnpm exec` puts it on PATH.
-      - name: Setup Vite+ and install dependencies
-        uses: voidzero-dev/setup-vp@cab1ab9eaff52d4857875f4f2c016e36af8f2c76 # v1.22.0
-        with:
-          node-version-file: .node-version
-          cache: true
+      # Node, pnpm, the repo's dependencies, Claude Code and agent-browser.
+      # The two tools land in $RUNNER_TEMP/agent-tools/bin, off PATH: only the
+      # agent's own step below puts them on it (see the action).
+      - name: Set up the agent
+        uses: ./.github/actions/setup-agent # zizmor: ignore[self-repository] `./` is the documented local-action form
 
       - name: Open the branch
         id: branch
@@ -175,7 +173,7 @@ jobs:
       - name: Build the ticket
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-        run: pnpm exec tsx .sandcastle/agent-workflows/implement/implement.ts
+        run: PATH="$RUNNER_TEMP/agent-tools/bin:$PATH" pnpm exec tsx .sandcastle/agent-workflows/implement/implement.ts
 
       - name: Verify the agent's work
         # This repo has no git hooks (docs/adr/0001): CI is the gate. So two
