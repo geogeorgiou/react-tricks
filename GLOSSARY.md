@@ -8,6 +8,10 @@ An interactive dashboard of React interview trick questions. Learners predict wh
 A themed group of Questions around one area of React, such as console logging or `useEffect`. One Lesson may touch several related concepts.
 _Avoid_: Topic, module, chapter, category
 
+**Section**:
+A named set of related Lessons, such as Effects or Memoization, shown as a heading in the sidebar so a learner can see the shape of the course at a glance. Every Lesson belongs to exactly one Section.
+_Avoid_: Category, group, track, chapter
+
 **Question**:
 One trick scenario within a Lesson: a single React component paired with what it asks and why it behaves as it does.
 _Avoid_: Variant, tab, App, exercise

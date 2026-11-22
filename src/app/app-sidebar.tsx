@@ -1,6 +1,17 @@
-import { AtomIcon, BookOpenIcon, LayoutGridIcon } from 'lucide-react';
+import {
+  AtomIcon,
+  BookOpenIcon,
+  ChevronDownIcon,
+  LayoutGridIcon,
+} from 'lucide-react';
+import { useState } from 'react';
 import { NavLink, useMatch } from 'react-router';
 
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import {
   Sidebar,
   SidebarContent,
@@ -17,7 +28,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { FeedbackButton } from '@/features/feedback/feedback-button';
-import { lessons } from '@/features/lessons/registry';
+import { sections, type Section } from '@/features/lessons/registry';
 import { ThemeToggle } from '@/features/theme/theme-toggle';
 
 export function AppSidebar() {
@@ -67,29 +78,14 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup>
-          <SidebarGroupLabel>Lessons</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {lessons.map((lesson) => (
-                <SidebarMenuItem key={lesson.id}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={lessonMatch?.params.lessonId === lesson.id}
-                    tooltip={lesson.title}>
-                    <NavLink
-                      to={`/lessons/${lesson.id}`}
-                      onClick={closeOnMobile}>
-                      <BookOpenIcon />
-                      <span>{lesson.title}</span>
-                    </NavLink>
-                  </SidebarMenuButton>
-                  <SidebarMenuBadge>{lesson.questions.length}</SidebarMenuBadge>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {sections.map((section) => (
+          <SidebarSection
+            key={section.title}
+            section={section}
+            activeLessonId={lessonMatch?.params.lessonId}
+            onNavigate={closeOnMobile}
+          />
+        ))}
       </SidebarContent>
 
       <SidebarFooter>
@@ -104,5 +100,59 @@ export function AppSidebar() {
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
+  );
+}
+
+function SidebarSection({
+  section,
+  activeLessonId,
+  onNavigate,
+}: {
+  section: Section;
+  activeLessonId: string | undefined;
+  onNavigate: () => void;
+}) {
+  const { state, isMobile } = useSidebar();
+  const [open, setOpen] = useState(true);
+  // The icon rail hides Section headings, so a closed Section would leave its
+  // Lessons unreachable there. Show them all while the rail is collapsed.
+  const isIconRail = state === 'collapsed' && !isMobile;
+
+  return (
+    <Collapsible
+      open={open || isIconRail}
+      onOpenChange={setOpen}
+      className='group/section'>
+      <SidebarGroup>
+        <SidebarGroupLabel
+          asChild
+          className='hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'>
+          <CollapsibleTrigger>
+            {section.title}
+            <ChevronDownIcon className='ml-auto transition-transform group-data-[state=closed]/section:-rotate-90' />
+          </CollapsibleTrigger>
+        </SidebarGroupLabel>
+        <CollapsibleContent>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {section.lessons.map((lesson) => (
+                <SidebarMenuItem key={lesson.id}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={activeLessonId === lesson.id}
+                    tooltip={lesson.title}>
+                    <NavLink to={`/lessons/${lesson.id}`} onClick={onNavigate}>
+                      <BookOpenIcon />
+                      <span>{lesson.title}</span>
+                    </NavLink>
+                  </SidebarMenuButton>
+                  <SidebarMenuBadge>{lesson.questions.length}</SidebarMenuBadge>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </CollapsibleContent>
+      </SidebarGroup>
+    </Collapsible>
   );
 }

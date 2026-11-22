@@ -50,7 +50,7 @@ Lessons are discovered from the file system. There's no registry to update:
 
 ```
 src/lessons/<lesson-id>/      folder name = URL slug (kebab-case)
-  index.mdx                   title, order, summary + short intro
+  index.mdx                   title, section, order, summary + short intro
   App1.tsx                    the component, exported as `App1`
   App1.mdx                    prompt + answer + explanation for App1
   App2.tsx / App2.mdx         …and so on
@@ -61,7 +61,8 @@ src/lessons/<lesson-id>/      folder name = URL slug (kebab-case)
 ```mdx
 ---
 title: 'Console Log'
-order: 1
+section: 'State & rendering' # one of SECTION_TITLES in registry.ts
+order: 1 # position within its Section
 summary: 'Shown on the overview card.'
 ---
 
