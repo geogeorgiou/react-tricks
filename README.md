@@ -46,7 +46,7 @@ Every tab shows the question's prompt and its real source code. Hit **Reveal ans
 
 ## Adding a lesson
 
-Lessons are discovered from the file system. There's no registry to update:
+Lessons are discovered from the file system. There's no registry to update, unless the Lesson starts a new Section (add its title to `SECTION_TITLES` in `src/features/lessons/registry.ts`):
 
 ```
 src/lessons/<lesson-id>/      folder name = URL slug (kebab-case)
