@@ -16,22 +16,26 @@ agent-browser install
 ## Ask the page
 
 Start the app with `pnpm dev` in the background, and wait for it rather than
-sleeping a fixed time:
+sleeping a fixed time. `set -m` gives it a process group of its own, and you
+stop it by killing that group: pnpm does not pass a plain `kill` on to Vite.
 
 ```bash
-pnpm dev &
-until curl -s localhost:5173 >/dev/null; do sleep 1; done
+set -m
+pnpm dev >/tmp/dev.log 2>&1 & echo $! >/tmp/dev.pid
+for i in $(seq 60); do curl -s localhost:3000 >/dev/null && break; sleep 1; done
+# ...
+kill -- -"$(cat /tmp/dev.pid)"
 ```
 
-`5173` is the dev server's default port; if `pnpm dev` printed another, use
-that. The app has two routes: the overview at `/`, and each Lesson at
+The port is `3000` (`server.port` in `vite.config.ts`). If the loop runs out,
+`/tmp/dev.log` says why. The app has two routes: the overview at `/`, and each Lesson at
 `/lessons/<lesson-id>`, the folder name under `src/lessons/`.
 
 A screenshot is pixels. To verify a change you need a yes or a no, so read the
 DOM:
 
 ```bash
-agent-browser open http://localhost:5173/lessons/will-re-render
+agent-browser open http://localhost:3000/lessons/will-re-render
 agent-browser find role button click --name "Show"
 
 agent-browser get text main     # what the Lesson shows now
