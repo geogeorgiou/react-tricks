@@ -9,7 +9,7 @@ A themed group of Questions around one area of React, such as console logging or
 _Avoid_: Topic, module, chapter, category
 
 **Section**:
-A named set of related Lessons, such as Effects or Memoization, shown as a heading in the sidebar so a learner can see the shape of the course at a glance. Every Lesson belongs to exactly one Section.
+A named set of related Lessons, such as Effects or Memoization, shown as a heading in the sidebar, the overview and search so a learner can see the shape of the course at a glance. Every Lesson belongs to exactly one Section, and the course runs through the Sections in order.
 _Avoid_: Category, group, track, chapter
 
 **Question**:
