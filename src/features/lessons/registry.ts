@@ -142,7 +142,6 @@ const discoveredLessons: Lesson[] = Object.entries(lessonDocs)
   .map(([path, doc]) => {
     assertFrontmatter(path, doc.frontmatter, {
       title: 'string',
-      section: 'string',
       order: 'number',
       summary: 'string',
     });
