@@ -42,7 +42,7 @@ export function AppSidebar() {
   const closeOnMobile = () => setOpenMobile(false);
   const activeLessonId = lessonMatch?.params.lessonId;
   const { isOpen, setSectionOpen } = useClosedSections(
-    findLesson(activeLessonId)?.section,
+    findLesson(activeLessonId),
   );
 
   return (

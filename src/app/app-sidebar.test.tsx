@@ -93,6 +93,26 @@ describe('AppSidebar', () => {
     );
   });
 
+  test('reopens its Section when moving to another Lesson in it', async () => {
+    const user = userEvent.setup();
+    renderSidebar({
+      path: '/lessons/use-effect',
+      children: (
+        <Link to='/lessons/use-effect-set-interval'>Go to setInterval</Link>
+      ),
+    });
+    const effects = sectionOf('Effects');
+
+    await user.click(effects.trigger);
+    expect(effects.trigger).toHaveAttribute('aria-expanded', 'false');
+
+    await user.click(screen.getByRole('link', { name: 'Go to setInterval' }));
+    expect(effects.trigger).toHaveAttribute('aria-expanded', 'true');
+    expect(
+      screen.getByRole('link', { name: 'useEffect + setInterval' }),
+    ).toHaveAttribute('data-active', 'true');
+  });
+
   test('keeps every Section open on the icon rail', async () => {
     const user = userEvent.setup();
     renderSidebar({ sidebarOpen: false });
