@@ -117,6 +117,7 @@ describe('AppSidebar', () => {
     const user = userEvent.setup();
     renderSidebar({ sidebarOpen: false });
     const memoization = sectionOf('Memoization');
+    expect(memoization.trigger).toBeDisabled();
 
     await user.click(memoization.trigger);
     expect(memoization.trigger).toHaveAttribute('aria-expanded', 'true');
@@ -128,6 +129,7 @@ describe('AppSidebar', () => {
       'aria-expanded',
       'true',
     );
+    expect(sectionOf('Memoization').trigger).toBeEnabled();
   });
 
   test('remembers closed Sections across a reload', async () => {

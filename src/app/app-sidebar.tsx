@@ -128,13 +128,15 @@ function SidebarSection({
 }) {
   const { state, isMobile } = useSidebar();
   // The icon rail hides Section headings, so a closed Section would leave its
-  // Lessons unreachable there. Show them all while the rail is collapsed.
+  // Lessons unreachable there. Show them all while the rail is collapsed, and
+  // take the hidden heading out of the tab order.
   const isIconRail = state === 'collapsed' && !isMobile;
 
   return (
     <Collapsible
       open={open || isIconRail}
-      onOpenChange={isIconRail ? undefined : onOpenChange}
+      onOpenChange={onOpenChange}
+      disabled={isIconRail}
       className='group/section'>
       <SidebarGroup>
         <SidebarGroupLabel
