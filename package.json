@@ -16,7 +16,8 @@
     "test:ui": "vp test --ui",
     "lint:actions": "scripts/lint-actions.sh",
     "actions:up": "scripts/actions-up.sh && pnpm lint:actions",
-    "actions:outdated": "scripts/actions-up.sh --dry-run"
+    "actions:outdated": "scripts/actions-up.sh --dry-run",
+    "prepare": "vp config --no-agent"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.3.0",

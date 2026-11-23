@@ -59,11 +59,10 @@ name: Agent — Implement A Ticket
 #   the label is an approval only a collaborator can give.
 #
 # WHO COMMITS
-#   The agent does. This repo has no git hooks (docs/adr/0001), so the agent
-#   runs `pnpm check` itself before each commit, its fast loop, and a step
-#   with no token runs `pnpm check` and `pnpm build` once before the push. That step runs code from
-#   the repo, so every git command that holds a token switches hooks off with
-#   `core.hooksPath=/dev/null` all the same.
+#   The agent does. The pre-commit hook runs `vp check --fix` on each
+#   commit's staged files, and ci.yml runs the full gate on the PR.
+#   The hook runs code from the repo, so every git command that holds a token
+#   switches hooks off with `core.hooksPath=/dev/null`.
 #
 #   The test suite is not the implementer's gate. The agent writes tests and
 #   may run the ones it touches, but the full `pnpm test --run` belongs to the
@@ -141,6 +140,13 @@ jobs:
           git config user.name "agent-factory[bot]"
           git config user.email "agent-factory[bot]@users.noreply.github.com"
           git checkout -b "$BRANCH"
+          # `vp install` ran `prepare`, which points git at .vite-hooks/_. If it
+          # did not, the agent's commits would skip the hook without anyone
+          # noticing.
+          if [ "$(git config core.hooksPath)" != ".vite-hooks/_" ]; then
+            echo "::error::The pre-commit hook is not installed (core.hooksPath is '$(git config core.hooksPath)')."
+            exit 1
+          fi
           # Where the agent starts. Anything after this is a commit it made.
           echo "base=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
@@ -174,15 +180,6 @@ jobs:
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
         run: PATH="$RUNNER_TEMP/agent-tools/bin:$PATH" pnpm exec tsx .sandcastle/agent-workflows/implement/implement.ts
-
-      - name: Verify the agent's work
-        # This repo has no git hooks (docs/adr/0001): CI is the gate. So two
-        # of the checks ci.yml runs gate the push here too. The test suite is
-        # left to the reviewer and to ci.yml (see WHO COMMITS). No token in
-        # this step: it runs code the agent wrote.
-        run: |
-          pnpm check
-          pnpm build
 
       - name: Check the agent committed
         # The agent owns the commits now, so this step owns the question of

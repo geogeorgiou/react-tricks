@@ -110,7 +110,7 @@ pnpm test --run
 pnpm build
 ```
 
-`pnpm check:fix` formats and applies lint autofixes. Tooling choices are recorded in [ADR 0001](docs/adr/0001-adopt-vite-plus-toolchain.md).
+`pnpm check:fix` formats and applies lint autofixes. `pnpm install` also installs a pre-commit hook that runs `vp check --fix` on staged files, and zizmor (`scripts/lint-actions.sh`) on staged workflow files. Tooling choices are recorded in [ADR 0001](docs/adr/0001-adopt-vite-plus-toolchain.md).
 
 ## GitHub Actions
 

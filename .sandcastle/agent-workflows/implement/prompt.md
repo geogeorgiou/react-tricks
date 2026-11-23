@@ -12,13 +12,12 @@ and lesson MDX in GLOSSARY.md's words.
 - Ship tests with the code. You may run the tests you write or touch
   (`pnpm test --run <file>`) while you work, but do not run the whole suite:
   the reviewer and CI do that, and the reviewer fixes what fails.
-- Before each commit, run `pnpm check` (format, lint and types, a couple of
-  seconds), and commit only when it passes. This repo has no git hooks, so
-  that is your fast loop.
-- `pnpm build` must pass too. The workflow runs `pnpm check` and
-  `pnpm build` once after you finish, and a failure there parks the ticket.
-- Commit with `git commit` on the current branch. Do not add git hooks or
-  change `core.hooksPath`.
+- Every commit runs the pre-commit hook: `vp check --fix` on the staged
+  files (format, lint and types). When it rejects a commit, fix what it
+  reports and commit again. That is your fast loop.
+- `pnpm build` must pass too: run it once before your last commit. CI runs
+  it again on the pull request.
+- Commit with `git commit` on the current branch, with the hook on.
 - Finish with at least one commit and a clean working tree. The workflow
   pushes and opens the pull request.
 - Leave `.github/` untouched.
