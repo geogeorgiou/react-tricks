@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vite-plus/test';
 
-import { SECTION_TITLES, findLesson, lessons, sections } from './registry';
+import { findLesson, lessons, sections } from './registry';
 
 describe('lesson registry', () => {
   test('discovers every lesson folder, in course order Section by Section', () => {
@@ -29,12 +29,6 @@ describe('lesson registry', () => {
       ['New in React 19', ['use']],
     ]);
     expect(sections.flatMap((section) => section.lessons)).toEqual(lessons);
-  });
-
-  test('every Section is a known Section title', () => {
-    for (const section of sections) {
-      expect(SECTION_TITLES).toContain(section.title);
-    }
   });
 
   test.each(lessons.map((lesson) => [lesson.id, lesson] as const))(
