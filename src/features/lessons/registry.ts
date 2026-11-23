@@ -18,7 +18,7 @@ import type { ComponentType } from 'react';
  * Section lists its Lessons in that same relative order.
  */
 export const SECTION_TITLES = [
-  'State & rendering',
+  'Rendering Fundamentals',
   'Effects',
   'Memoization',
   'New in React 19',

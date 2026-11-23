@@ -51,7 +51,7 @@ describe('AppSidebar', () => {
     ).toEqual(['useEffect', 'useEffect + setInterval']);
 
     for (const title of [
-      'State & rendering',
+      'Rendering Fundamentals',
       'Memoization',
       'New in React 19',
     ]) {

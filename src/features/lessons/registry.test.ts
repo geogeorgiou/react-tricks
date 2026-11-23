@@ -23,7 +23,7 @@ describe('lesson registry', () => {
         section.lessons.map((lesson) => lesson.id),
       ]),
     ).toEqual([
-      ['State & rendering', ['console-log', 'will-re-render', 'context']],
+      ['Rendering Fundamentals', ['console-log', 'will-re-render', 'context']],
       ['Effects', ['use-effect', 'use-effect-set-interval']],
       ['Memoization', ['use-memo', 'use-callback']],
       ['New in React 19', ['use']],
