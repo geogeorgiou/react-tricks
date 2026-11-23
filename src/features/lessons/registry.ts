@@ -13,9 +13,9 @@ import type { ComponentType } from 'react';
  */
 
 /**
- * Sections in sidebar order. A Lesson names its Section in frontmatter. Its
- * `order` places it across the whole course (the overview and search), and a
- * Section lists its Lessons in that same relative order.
+ * Sections in course order. A Lesson names its Section in frontmatter, and its
+ * `order` places it within that Section. The sidebar, the overview and search
+ * all run through the Sections in this order.
  */
 export const SECTION_TITLES = [
   'Rendering Fundamentals',
@@ -138,8 +138,7 @@ export function isSectionTitle(value: unknown): value is SectionTitle {
   return SECTION_TITLES.some((title) => title === value);
 }
 
-/** Every Lesson across the course, in `order`. */
-export const lessons: Lesson[] = Object.entries(lessonDocs)
+const discoveredLessons: Lesson[] = Object.entries(lessonDocs)
   .map(([path, doc]) => {
     assertFrontmatter(path, doc.frontmatter, {
       title: 'string',
@@ -165,13 +164,16 @@ export const lessons: Lesson[] = Object.entries(lessonDocs)
   .sort((a, b) => a.order - b.order);
 
 /**
- * Sections in sidebar order, each with its Lessons in `order`, leaving out any
+ * Sections in course order, each with its Lessons in `order`, leaving out any
  * Section that has no Lessons yet.
  */
 export const sections: Section[] = SECTION_TITLES.map((title) => ({
   title,
-  lessons: lessons.filter((lesson) => lesson.section === title),
+  lessons: discoveredLessons.filter((lesson) => lesson.section === title),
 })).filter((section) => section.lessons.length > 0);
+
+/** Every Lesson across the course: Section by Section, each in `order`. */
+export const lessons: Lesson[] = sections.flatMap((section) => section.lessons);
 
 export function findLesson(id: string | undefined) {
   return lessons.find((lesson) => lesson.id === id);
