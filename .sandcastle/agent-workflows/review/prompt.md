@@ -21,11 +21,11 @@ leaves open, or a trade-off between two documented rules. Everything else you
 fix on `{{BRANCH}}`, however large: failing tests, writing the tests the
 change lacks, naming code in GLOSSARY.md's words, moving behaviour under
 src/features/ behind an entry point a test can call, extracting a shared
-component. Commit each fix on its own. This repo has no git hooks: run
-`pnpm check` before each commit, and the tests a fix touches
-(`pnpm test --run <file>`). `pnpm build` must pass too. The workflow runs
-`pnpm check`, `pnpm test --run` and `pnpm build` once after you finish, then
-pushes your commits.
+component. Commit each fix on its own. The pre-commit hook runs
+`vp check --fix` on the staged files; run the tests a fix touches
+(`pnpm test --run <file>`) before you commit. `pnpm build` must pass too:
+run it once after your last fix. The workflow pushes your commits, and CI
+runs `pnpm check`, `pnpm test --run` and `pnpm build` on the push.
 Leave `.github/` untouched.
 
 Every finding you leave becomes an inline comment on the first line it

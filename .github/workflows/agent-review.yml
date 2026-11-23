@@ -10,8 +10,8 @@ name: Agent — Review A Pull Request
 #   hand-off failed.
 #
 #   The implementers do not run the test suite. This workflow does: the agent
-#   runs `pnpm test --run` and fixes what fails, and the step before the push
-#   runs it again.
+#   runs `pnpm test --run` and fixes what fails. The pre-commit hook checks
+#   every commit it makes, and ci.yml runs the full gate on the push.
 #
 # THE POINT OF THIS FILE: IT IS MEMORY-LESS
 #   This workflow shares nothing with the implementer run. No session, no
@@ -173,21 +173,19 @@ jobs:
           git config user.name "agent-factory[bot]"
           git config user.email "agent-factory[bot]@users.noreply.github.com"
           git checkout -B "$BRANCH"
+          # `vp install` ran `prepare`, which points git at .vite-hooks/_. If it
+          # did not, the agent's commits would skip the hook without anyone
+          # noticing.
+          if [ "$(git config core.hooksPath)" != ".vite-hooks/_" ]; then
+            echo "::error::The pre-commit hook is not installed (core.hooksPath is '$(git config core.hooksPath)')."
+            exit 1
+          fi
 
       - name: Review the pull request
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           OUTPUT_DIR: ${{ runner.temp }}
         run: PATH="$RUNNER_TEMP/agent-tools/bin:$PATH" pnpm exec tsx .sandcastle/agent-workflows/review/review.ts
-
-      - name: Verify the agent's work
-        # This repo has no git hooks (docs/adr/0001): CI is the gate. So the
-        # checks ci.yml runs gate the push of the review's fixes too. No token in this step: it
-        # runs code the agent wrote.
-        run: |
-          pnpm check
-          pnpm test --run
-          pnpm build
 
       - name: Push the review's fixes
         id: push

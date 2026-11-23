@@ -11,6 +11,11 @@ import { defineConfig, lazyPlugins } from 'vite-plus';
 import { feedbackPlugin } from './src/features/feedback/feedback-plugin';
 
 export default defineConfig({
+  // The pre-commit hook (.vite-hooks/pre-commit) runs `vp staged`.
+  staged: {
+    '*': 'vp check --fix',
+    '.github/**/*.{yml,yaml}': 'scripts/lint-actions.sh',
+  },
   lint: {
     plugins: ['oxc', 'typescript', 'unicorn'],
     categories: {
