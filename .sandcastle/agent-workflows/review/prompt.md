@@ -8,6 +8,11 @@ Review it with the code-review skill, .agents/skills/code-review/SKILL.md:
 - standards: CLAUDE.md, GLOSSARY.md, docs/adr/, and the lint config in
   vite.config.ts
 
+The spec may end with "Decisions a person made on this PR": questions earlier
+reviews left, with a person's answers. An answered decision is settled spec.
+Pass it to both sub-agents, apply it as a fix, and leave no finding that asks
+it again.
+
 ## Run the test suite
 
 The implementer does not run the whole test suite; you do. Run

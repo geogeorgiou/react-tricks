@@ -23,13 +23,16 @@ name: Agent — Review A Pull Request
 #                                docs/adr/, plus the lint config in
 #                                vite.config.ts
 #     3. the originating issue — what was asked for, read from the ticket the
-#                                PR closes, not from the PR description
+#                                PR closes, not from the PR description, plus
+#                                a person's answers to the decisions earlier
+#                                reviews left on this PR
 #
 #   That independence is the whole value. An implementer that has argued
 #   itself into a shortcut will argue a reviewer that shares its context into
 #   the same shortcut. A reviewer that has never seen the argument cannot be.
 #   If you find yourself wanting to pass context from the build run into this
-#   one — that is the instinct to resist.
+#   one — that is the instinct to resist. A person's answer on a review thread
+#   is not that context: it is the spec, settled where the ticket left it open.
 #
 #   The agent itself is a Sandcastle script:
 #   .sandcastle/agent-workflows/review/review.ts, with its prompt next to it
@@ -147,7 +150,11 @@ jobs:
           # 3. The spec. Whatever issue this PR closes — found in the PR body,
           #    which is the one thing here we do read from the PR. If there is
           #    no `Closes #n`, the Spec axis reports "no spec available"
-          #    rather than inventing one.
+          #    rather than inventing one. Then the decisions a person already
+          #    made: every reply on a review thread, under the question it
+          #    answers. The agent's comments are never replies, and it posts
+          #    under FACTORY_PAT's owner too, so a reply is how a person's
+          #    answer is told apart.
           gh pr view "$PR_NUMBER" --json body --jq .body > /tmp/pr-body.md
           issue=$(grep -oiE '(closes|fixes|resolves) #[0-9]+' /tmp/pr-body.md \
             | head -n1 | grep -oE '[0-9]+' || true)
@@ -158,6 +165,20 @@ jobs:
           else
             echo "No spec available: this PR does not say which ticket it closes." \
               > /tmp/review-spec.md
+          fi
+          decisions=$(gh api "repos/$GH_REPO/pulls/$PR_NUMBER/comments" \
+            --paginate --slurp | jq -r '
+              add
+              | (map(select(.in_reply_to_id == null)) | INDEX(.id)) as $roots
+              | map(select(.in_reply_to_id != null))
+              | group_by(.in_reply_to_id)[]
+              | $roots[(.[0].in_reply_to_id | tostring)] as $q
+              | "### `\($q.path):\($q.original_line)`\n\n**Asked:** \($q.body)\n\n"
+                + (map("**Answer:** \(.body)") | join("\n\n")) + "\n"
+            ')
+          if [ -n "$decisions" ]; then
+            printf '\n## Decisions a person made on this PR\n\n%s\n' "$decisions" \
+              >> /tmp/review-spec.md
           fi
           cat /tmp/review-spec.md
 
