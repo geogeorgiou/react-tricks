@@ -12,7 +12,7 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
-import { lessons } from '@/features/lessons/registry';
+import { sections } from '@/features/lessons/registry';
 
 export function SearchDialog() {
   const [open, setOpen] = useState(false);
@@ -56,17 +56,19 @@ export function SearchDialog() {
           <CommandInput placeholder='Search lessons…' />
           <CommandList>
             <CommandEmpty>No lessons found.</CommandEmpty>
-            <CommandGroup heading='Lessons'>
-              {lessons.map((lesson) => (
-                <CommandItem
-                  key={lesson.id}
-                  value={lesson.title}
-                  onSelect={() => goTo(lesson.id)}>
-                  <BookOpenIcon />
-                  <span className='truncate'>{lesson.title}</span>
-                </CommandItem>
-              ))}
-            </CommandGroup>
+            {sections.map((section) => (
+              <CommandGroup key={section.title} heading={section.title}>
+                {section.lessons.map((lesson) => (
+                  <CommandItem
+                    key={lesson.id}
+                    value={lesson.title}
+                    onSelect={() => goTo(lesson.id)}>
+                    <BookOpenIcon />
+                    <span className='truncate'>{lesson.title}</span>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            ))}
           </CommandList>
         </Command>
       </CommandDialog>

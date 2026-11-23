@@ -18,6 +18,9 @@ window.matchMedia ??= ((query: string) => ({
   removeEventListener: () => {},
 })) as unknown as typeof window.matchMedia;
 
+// jsdom has no scrollIntoView; cmdk scrolls the selected search result into view.
+Element.prototype.scrollIntoView ??= () => {};
+
 afterEach(() => {
   cleanup();
 });
