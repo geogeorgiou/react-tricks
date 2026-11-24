@@ -46,7 +46,7 @@ replacement) and the test it still needs, or why no test can tell it from the
 original.
 
 Never add a `// Stryker disable` comment, and never touch
-`stryker.config.mjs` or `scripts/mutation.sh`, to get past the gate. Only a
+`stryker.config.mjs` or `scripts/mutation.ts`, to get past the gate. Only a
 person adds a suppression. When you think one is justified, because the
 mutant is equivalent to the original code, leave it as a finding on that line,
 with the exact comment to add:

@@ -14,7 +14,7 @@ import process from 'node:process';
 
 import { afterEach, beforeEach, describe, expect, test } from 'vite-plus/test';
 
-const SCRIPT = path.resolve(import.meta.dirname, 'mutation.sh');
+const SCRIPT = path.resolve(import.meta.dirname, 'mutation.ts');
 
 // Keep the throwaway repo free of the caller's git state, such as a hook's
 // GIT_INDEX_FILE.
@@ -38,6 +38,29 @@ function write(file: string) {
   writeFileSync(full, content);
 }
 
+/** Write a file line by line, so a test can change some lines and not others. */
+function writeLines(file: string, lines: string[]) {
+  const full = path.join(repo, file);
+  mkdirSync(path.dirname(full), { recursive: true });
+  writeFileSync(full, lines.map((line) => `${line}\n`).join(''));
+}
+
+const FIVE = [
+  'const a = 1;',
+  'const b = 2;',
+  'const c = 3;',
+  'const d = 4;',
+  'const e = 5;',
+];
+
+/** Commit a five-line file on `feature`, then branch `edit` off it to change it. */
+function startFromFiveLines(file: string) {
+  writeLines(file, FIVE);
+  git('add', '--all');
+  git('commit', '--quiet', '-m', 'five lines');
+  git('switch', '--quiet', '--create', 'edit');
+}
+
 function commit(...files: string[]) {
   for (const file of files) write(file);
   git('add', '--all');
@@ -49,11 +72,15 @@ function run(
   extraEnv: Record<string, string> = {},
   cwd = repo,
 ) {
-  const result = spawnSync(SCRIPT, args, {
+  // Through node, not the shebang: Stryker's sandbox copy of a .ts file drops
+  // the executable bit.
+  const result = spawnSync(process.execPath, [SCRIPT, ...args], {
     cwd,
     env: { ...env, ...extraEnv },
     encoding: 'utf8',
   });
+  // A script that could not start has no output to assert on.
+  if (result.error) throw result.error;
   return {
     status: result.status,
     stdout: result.stdout,
@@ -88,7 +115,7 @@ afterEach(() => {
   rmSync(repo, { recursive: true, force: true });
 });
 
-describe('scripts/mutation.sh --list', () => {
+describe('scripts/mutation.ts --list', () => {
   test('lists a changed in-scope file', () => {
     commit('src/features/preview/console-panel.tsx', 'src/app/app-layout.tsx');
 
@@ -192,7 +219,88 @@ describe('scripts/mutation.sh --list', () => {
   });
 });
 
-describe('scripts/mutation.sh base', () => {
+describe('scripts/mutation.ts --list, changed lines', () => {
+  const file = 'src/features/preview/console-panel.tsx';
+
+  test('a changed file lists only its changed line ranges', () => {
+    startFromFiveLines(file);
+    writeLines(file, [
+      'const a = 1;',
+      'const b = 20;',
+      'const c = 3;',
+      'const d = 40;',
+      'const e = 50;',
+    ]);
+    git('commit', '--quiet', '--all', '-m', 'edit');
+
+    expect(list('feature').lines).toEqual([`${file}:2-2`, `${file}:4-5`]);
+  });
+
+  test('a file new since the merge-base is listed whole', () => {
+    commit(file);
+
+    expect(list().lines).toEqual([file]);
+  });
+
+  test('lists unstaged and staged changes', () => {
+    startFromFiveLines(file);
+    writeLines(file, ['const a = 10;', ...FIVE.slice(1)]);
+    writeLines('src/app/app-layout.tsx', ['export const x = 1;']);
+    git('add', 'src/app/app-layout.tsx');
+
+    expect(list('feature').lines).toEqual([
+      'src/app/app-layout.tsx',
+      `${file}:1-1`,
+    ]);
+  });
+
+  test('lists an untracked file whole', () => {
+    writeLines('src/app/draft.tsx', [
+      'export const a = 1;',
+      'export const b = 2;',
+    ]);
+
+    expect(list().lines).toEqual(['src/app/draft.tsx']);
+  });
+
+  test('a change that only deletes lines lists nothing', () => {
+    startFromFiveLines(file);
+    writeLines(file, FIVE.slice(0, 3));
+    git('commit', '--quiet', '--all', '-m', 'delete lines');
+
+    expect(list('feature').lines).toEqual(['nothing to mutate']);
+  });
+
+  test('a test that only deletes lines lists its sibling whole', () => {
+    const test = 'src/features/preview/console-panel.test.tsx';
+    writeLines(file, FIVE);
+    startFromFiveLines(test);
+    writeLines(test, FIVE.slice(0, 4));
+    git('commit', '--quiet', '--all', '-m', 'drop an assertion');
+
+    expect(list('feature').lines).toEqual([file]);
+  });
+
+  test('a deleted test lists its sibling whole', () => {
+    git('rm', '--quiet', 'src/features/preview/sandbox.test.ts');
+    git('commit', '--quiet', '-m', 'drop the test');
+
+    expect(list().lines).toEqual(['src/features/preview/sandbox.ts']);
+  });
+
+  test('a changed test lists its sibling whole, even when the sibling changed too', () => {
+    const test = 'src/features/preview/console-panel.test.tsx';
+    writeLines(test, ['test();']);
+    startFromFiveLines(file);
+    writeLines(file, ['const a = 10;', ...FIVE.slice(1)]);
+    writeLines(test, ['test();', 'test();']);
+    git('commit', '--quiet', '--all', '-m', 'edit both');
+
+    expect(list('feature').lines).toEqual([file]);
+  });
+});
+
+describe('scripts/mutation.ts base', () => {
   beforeEach(() => {
     commit('src/features/preview/console-panel.tsx');
   });
@@ -221,7 +329,7 @@ describe('scripts/mutation.sh base', () => {
   });
 });
 
-describe('scripts/mutation.sh without --list', () => {
+describe('scripts/mutation.ts without --list', () => {
   let bin: string;
 
   beforeEach(() => {
@@ -258,6 +366,20 @@ describe('scripts/mutation.sh without --list', () => {
     expect(result.status).toBe(0);
   });
 
+  test('passes line ranges to --mutate', () => {
+    const file = 'src/features/preview/console-panel.tsx';
+    startFromFiveLines(file);
+    writeLines(file, ['const a = 10;', ...FIVE.slice(1, 4), 'const e = 50;']);
+    git('commit', '--quiet', '--all', '-m', 'edit');
+
+    expect(run(['feature'], withFakeStryker()).lines).toEqual([
+      'run',
+      '--incremental',
+      '--mutate',
+      `${file}:1-1,${file}:5-5`,
+    ]);
+  });
+
   test("exits with Stryker's status", () => {
     commit('src/features/preview/console-panel.tsx');
 
@@ -267,11 +389,11 @@ describe('scripts/mutation.sh without --list', () => {
   test('fails with a hint when Stryker is not installed', () => {
     commit('src/features/preview/console-panel.tsx');
     // A copy outside this repo, so its node_modules/.bin fallback is empty.
-    const script = path.join(bin, 'scripts', 'mutation.sh');
+    const script = path.join(bin, 'scripts', 'mutation.ts');
     mkdirSync(path.dirname(script));
     copyFileSync(SCRIPT, script);
 
-    const result = spawnSync(script, ['main'], {
+    const result = spawnSync(process.execPath, [script, 'main'], {
       cwd: repo,
       env: { ...env, PATH: '/usr/bin:/bin' },
       encoding: 'utf8',

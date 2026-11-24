@@ -37,20 +37,27 @@ purpose, so mutating it is meaningless.
 
 ### Per-PR scope: diff-scoped and incremental
 
-- Stryker never runs against the whole codebase. The files to mutate are the
-  in-scope files changed since the merge-base with the base branch
-  (`git diff --name-only <merge-base>...HEAD`), passed to Stryker as
-  `--mutate`.
-- **Test → sibling rule:** a changed `X.test.ts(x)` also mutates its colocated
-  `X.ts(x)`, if that file is in scope, so a test edit that weakens the suite is
-  caught.
+- Stryker never runs against the whole codebase. It mutates the **lines**
+  each in-scope file added or changed since the merge-base with the base
+  branch, read from the hunk headers of `git diff -U0 <merge-base>` and passed
+  to Stryker as `--mutate file:20-21`. A mutant on a line the PR didn't write
+  grades code that isn't the PR's, and agent-review would be asked to kill it.
+- The diff is against the work tree, so committed, staged and unstaged changes
+  all count, and an untracked file counts whole. A local run before a commit
+  then sees the same work CI will see after it.
+- A file new since the merge-base is mutated whole.
+- **Test → sibling rule:** a changed or deleted `X.test.ts(x)` mutates its
+  colocated `X.ts(x)` **whole**, if that file is in scope. A test edit writes
+  no source lines, and the edited tests grade the whole file, so a test edit
+  that weakens the suite is caught.
 - Every run uses `--incremental`, so later pushes to the same PR only re-test
   mutants whose code or covering tests changed.
 
 ### One script decides scope
 
-- `scripts/mutation.sh` computes the file list (diff, scope filter, sibling
-  rule) and invokes Stryker. It is exposed as `pnpm test:mutation`.
+- `scripts/mutation.ts` computes what to mutate (line ranges, scope filter,
+  sibling rule) and invokes Stryker. It is exposed as `pnpm test:mutation`
+  and run with `node`, which strips the types, so it needs no build step.
 - Its base defaults to `origin/main` and can be overridden.
 - CI, `agent-review` and local runs all call it, so they never disagree about
   scope.
