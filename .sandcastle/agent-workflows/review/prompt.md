@@ -19,6 +19,38 @@ The implementer does not run the whole test suite; you do. Run
 `pnpm test --run` once before you start fixing, and once more after your last
 fix. Every failing test is a finding: fix it like any other.
 
+## Kill the surviving mutants
+
+Once the suite passes, test how strong the PR's tests are. Run
+`pnpm test:mutation origin/{{BASE_REF}}` yourself, in this checkout. It
+mutates only the in-scope files the PR changed, and runs nothing when it
+prints "nothing to mutate". Never download CI's mutation report or
+incremental baseline: you work from this checkout alone.
+
+Read the mutants from Stryker's JSON report, `reports/mutation/mutation.json`.
+Under `files`, each file's `mutants` with `status` `Survived` or `NoCoverage`
+are the ones to kill. Each has `mutatorName`, `replacement` and
+`location.start.line`.
+
+Kill them in **at most two rounds**. A round is:
+
+1. Write the tests that make each surviving or no-coverage mutant fail: assert
+   on the behaviour the mutant changes, not on the implementation.
+2. Run the tests you touched (`pnpm test --run <file>`) and commit them.
+3. Re-run `pnpm test:mutation origin/{{BASE_REF}}` and read the report again.
+
+Stop after the second round's re-run, even if mutants survive. Each mutant
+still `Survived` or `NoCoverage` then is a finding, on that mutant's file and
+`location.start.line`: say what the mutant changes (its mutator and
+replacement) and why no test could catch it.
+
+Never add a `// Stryker disable` comment, and never touch the Stryker config
+or `scripts/mutation.sh`, to get past the gate. Only a person adds a
+suppression. When you think one is justified, because the mutant is
+equivalent to the original code, leave it as a finding on that line, with the
+exact comment to add:
+`// Stryker disable next-line <mutator>: <reason>`.
+
 ## Fix everything a person does not have to decide
 
 The human reviewer gets **decisions** only: product behaviour the ticket
