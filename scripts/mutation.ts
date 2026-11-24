@@ -135,6 +135,8 @@ function parseArgs(argv: string[]) {
   let base = process.env.MUTATION_BASE || 'origin/main';
   for (const arg of argv) {
     if (arg === '--list') listOnly = true;
+    // `pnpm test:mutation -- <base>` passes the `--` through.
+    else if (arg === '--') continue;
     else if (arg.startsWith('-')) {
       console.error(`Unknown option: ${arg}`);
       process.exit(2);

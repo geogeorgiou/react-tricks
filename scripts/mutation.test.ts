@@ -376,6 +376,19 @@ describe('scripts/mutation.ts base', () => {
       'src/features/preview/console-panel.tsx',
     ]);
   });
+
+  test('ignores the `--` that `pnpm test:mutation -- <base>` passes through', () => {
+    expect(
+      run(['--list', '--', 'main'], { MUTATION_BASE: 'nope' }).lines,
+    ).toEqual(['src/features/preview/console-panel.tsx']);
+  });
+
+  test('rejects an unknown option', () => {
+    const result = run(['--nope']);
+
+    expect(result.stderr).toContain('Unknown option: --nope');
+    expect(result.status).toBe(2);
+  });
 });
 
 describe('scripts/mutation.ts without --list', () => {

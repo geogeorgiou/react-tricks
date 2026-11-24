@@ -80,6 +80,11 @@ purpose, so mutating it is meaningless.
 - The incremental baseline (`stryker-incremental.json`) lives in
   `actions/cache`, scoped to the PR: key `stryker-pr-<number>-<sha>`,
   restore-key `stryker-pr-<number>-`. There is no baseline on `main`.
+  Restore and save are separate steps (`actions/cache/restore`,
+  `actions/cache/save` on `always()`), so a run below the threshold still
+  saves its baseline for the next push.
+- The job checks out the PR's head, not the test merge commit, so annotation
+  lines match the PR's files.
 - Reporting: a job summary with the score, a line annotation per surviving
   mutant (file, line, mutator, replacement, from the JSON reporter) and the
   HTML report uploaded as an artifact.
