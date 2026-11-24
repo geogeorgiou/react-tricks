@@ -1,30 +1,45 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, test } from 'vite-plus/test';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import {
+  afterAll,
+  afterEach,
+  describe,
+  expect,
+  test,
+  vi,
+} from 'vite-plus/test';
 
 import { App2 } from './App2';
 
+const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+const logged = () => consoleLogSpy.mock.calls.map(([message]) => message);
+
 describe('App2', () => {
-  test('keeps the count after switching tabs back and forth', () => {
+  afterEach(() => {
+    consoleLogSpy.mockClear();
+  });
+
+  afterAll(() => {
+    consoleLogSpy.mockRestore();
+  });
+
+  test('cleans up effects while hidden but keeps state', async () => {
     render(<App2 />);
-    const home = screen.getByRole('tab', { name: 'Home' });
-    const counter = screen.getByRole('tab', { name: 'Counter' });
-    expect(home).toHaveAttribute('aria-selected', 'true');
-    expect(counter).toHaveAttribute('aria-selected', 'false');
+    expect(logged()).toEqual(['connected']);
 
-    fireEvent.click(counter);
-    expect(counter).toHaveAttribute('aria-selected', 'true');
-    expect(home).toHaveAttribute('aria-selected', 'false');
-    const plusOne = screen.getByRole('button', { name: '+1' });
-    fireEvent.click(plusOne);
-    fireEvent.click(plusOne);
-    fireEvent.click(plusOne);
+    const send = screen.getByRole('button', { name: 'Send' });
+    fireEvent.click(send);
+    fireEvent.click(send);
 
-    fireEvent.click(home);
-    expect(screen.getByText('Count: 3')).not.toBeVisible();
-    expect(screen.getByText(/Welcome/)).toBeVisible();
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Hide chat' }));
+    });
+    expect(logged()).toEqual(['connected', 'disconnected']);
 
-    fireEvent.click(counter);
-    expect(screen.getByText('Count: 3')).toBeVisible();
-    expect(screen.getByText(/Welcome/)).not.toBeVisible();
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Show chat' }));
+    });
+    expect(logged()).toEqual(['connected', 'disconnected', 'connected']);
+    expect(screen.getByText('Messages sent: 2')).toBeVisible();
   });
 });

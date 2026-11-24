@@ -1,24 +1,30 @@
 ---
-title: 'Switching tabs'
-prompt: 'Open the "Counter" tab, click "+1" three times, go back to "Home", then open "Counter" again. What does it show?'
+title: 'Effects while hidden'
+prompt: 'Click "Send" twice, then "Hide chat" and "Show chat". What is logged, and how many messages are shown?'
+strictModeSensitive: true
 ---
 
 ## Expected output
 
-It shows **Count: 3**.
+```txt
+// mount
+connected
+// click "Hide chat"
+disconnected
+// click "Show chat"
+connected
+```
+
+It shows **Messages sent: 2**.
 
 ## Why
 
-Both tabs stay mounted, each in its own `<Activity>`. Switching tabs only flips which one is `"visible"`. The hidden `CounterTab` keeps its `count`, so it comes back at 3.
+Hiding an `<Activity>` keeps its children's **state** but cleans up their **effects**, as if they had unmounted. Showing it again runs the effects again, as if they had mounted, but with the state they had before.
 
-Switching tabs by rendering only the current one remounts it every time:
+So `ChatRoom` disconnects while nobody can see it, and reconnects when it is shown, without losing `sentCount`.
 
-```tsx
-<div>{tab === 'counter' && <CounterTab />}</div>
-```
-
-With that, going back to **Counter** shows **Count: 0**.
+> **In StrictMode (development):** React runs every effect, cleans it up and runs it again whenever it mounts or is shown, so each `connected` above appears as `connected`, `disconnected`, `connected`.
 
 ## Takeaway
 
-Wrap each tab in `<Activity>` to switch between them without losing what the user did in each one.
+A hidden `<Activity>` keeps state but not effects. Put subscriptions and timers in effects with a cleanup, and they stop while the UI is hidden.

@@ -1,44 +1,31 @@
-import { Activity, useState } from 'react';
+import { Activity, useEffect, useState } from 'react';
 
-type Tab = 'home' | 'counter';
+const ChatRoom = () => {
+  const [sentCount, setSentCount] = useState(0);
 
-const HomeTab = () => <p>Welcome! Open the Counter tab to count clicks.</p>;
-
-const CounterTab = () => {
-  const [count, setCount] = useState(0);
+  useEffect(() => {
+    console.log('connected');
+    return () => console.log('disconnected');
+  }, []);
 
   return (
     <div>
-      <p>Count: {count}</p>
-      <button onClick={() => setCount((c) => c + 1)}>+1</button>
+      <p>Messages sent: {sentCount}</p>
+      <button onClick={() => setSentCount((c) => c + 1)}>Send</button>
     </div>
   );
 };
 
 export const App2 = () => {
-  const [tab, setTab] = useState<Tab>('home');
+  const [showChat, setShowChat] = useState(true);
 
   return (
     <div>
-      <div role='tablist'>
-        <button
-          role='tab'
-          aria-selected={tab === 'home'}
-          onClick={() => setTab('home')}>
-          Home
-        </button>
-        <button
-          role='tab'
-          aria-selected={tab === 'counter'}
-          onClick={() => setTab('counter')}>
-          Counter
-        </button>
-      </div>
-      <Activity mode={tab === 'home' ? 'visible' : 'hidden'}>
-        <HomeTab />
-      </Activity>
-      <Activity mode={tab === 'counter' ? 'visible' : 'hidden'}>
-        <CounterTab />
+      <button onClick={() => setShowChat((s) => !s)}>
+        {showChat ? 'Hide' : 'Show'} chat
+      </button>
+      <Activity mode={showChat ? 'visible' : 'hidden'}>
+        <ChatRoom />
       </Activity>
     </div>
   );

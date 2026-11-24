@@ -1,24 +1,24 @@
 ---
-title: 'Hidden filter panel'
-prompt: 'Expand "Genre", click "Hide filters", then "Show filters". Is "Genre" still expanded?'
+title: 'Switching tabs'
+prompt: 'Open the "Counter" tab, click "+1" three times, go back to "Home", then open "Counter" again. What does it show?'
 ---
 
 ## Expected output
 
-**Yes.** **Genre** is still expanded and lists Jazz, Rock and Techno. **Decade** is still collapsed.
+It shows **Count: 3**.
 
 ## Why
 
-`<Activity mode="hidden">` doesn't unmount `FilterPanel`. React hides it with `display: none` and keeps each `FilterGroup` and its `expanded` state. When `mode` goes back to `"visible"`, the panel reappears just as you left it.
+Both tabs stay mounted, each in its own `<Activity>`. Switching tabs only flips which one is `"visible"`. The hidden `CounterTab` keeps its `count`, so it comes back at 3.
 
-The usual way to hide a panel loses that state:
+Switching tabs by rendering only the current one remounts it every time:
 
 ```tsx
-<div>{showFilters && <FilterPanel />}</div>
+<div>{tab === 'counter' && <CounterTab />}</div>
 ```
 
-Here `false` unmounts `FilterPanel`, so every `FilterGroup` mounts again with `useState(false)` and both groups come back collapsed.
+With that, going back to **Counter** shows **Count: 0**.
 
 ## Takeaway
 
-To hide UI the user will come back to, wrap it in `<Activity>` instead of rendering it conditionally: its state survives while it is hidden.
+Wrap each tab in `<Activity>` to switch between them without losing what the user did in each one.
