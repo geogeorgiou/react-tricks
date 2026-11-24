@@ -34,4 +34,21 @@ describe('SearchDialog', () => {
       ).toEqual(section.lessons.map((lesson) => lesson.title));
     }
   });
+
+  test('shows a pointer cursor over every search result', async () => {
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter>
+        <SearchDialog />
+      </MemoryRouter>,
+    );
+
+    await user.click(screen.getByRole('button', { name: /search/i }));
+
+    for (const option of within(screen.getByRole('dialog')).getAllByRole(
+      'option',
+    )) {
+      expect(option).toHaveClass('cursor-pointer');
+    }
+  });
 });
