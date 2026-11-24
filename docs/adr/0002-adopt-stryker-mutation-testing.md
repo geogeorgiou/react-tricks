@@ -27,7 +27,7 @@ purpose, so mutating it is meaningless.
   `src/common/**` and `src/components/ui/**`.
 - **Never mutated, even when changed:**
   - `src/features/lessons/registry.ts`
-  - `src/lessons/**` (Lesson code is buggy on purpose; `.tsx` and `.mdx`)
+  - `src/lessons/**` (Lesson code is buggy on purpose)
   - `**/*.mdx`
   - `src/**/test-utils/**`
   - `.sandcastle/**`
