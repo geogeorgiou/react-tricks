@@ -1,4 +1,4 @@
-// Mutation testing. See docs/adr/0002-adopt-stryker-mutation-testing.md.
+// Mutation testing with Stryker, run through the Vitest runner on vite.config.ts.
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
 export default {
   // pnpm doesn't hoist the runner next to @stryker-mutator/core, so Stryker's
