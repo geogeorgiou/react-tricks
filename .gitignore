@@ -25,3 +25,7 @@ dist-ssr
 html/**
 coverage/**
 .vitest/
+
+# Stryker mutation testing
+reports/
+.stryker-tmp/
