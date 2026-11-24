@@ -274,7 +274,11 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
-    include: ['src/**/*.test.{ts,tsx}', '.sandcastle/**/*.test.ts'],
+    include: [
+      'src/**/*.test.{ts,tsx}',
+      '.sandcastle/**/*.test.ts',
+      'scripts/**/*.test.ts',
+    ],
     coverage: {
       exclude: ['src/**/test-utils/**', 'src/main.tsx'],
     },

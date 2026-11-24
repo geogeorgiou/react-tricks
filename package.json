@@ -14,6 +14,7 @@
     "check:fix": "vp check --fix",
     "test": "vp test",
     "test:ui": "vp test --ui",
+    "test:mutation": "scripts/mutation.sh",
     "lint:actions": "scripts/lint-actions.sh",
     "actions:up": "scripts/actions-up.sh && pnpm lint:actions",
     "actions:outdated": "scripts/actions-up.sh --dry-run",
