@@ -42,7 +42,8 @@ Kill them in **at most two rounds**. A round is:
 Stop after the second round's re-run, even if mutants survive. Each mutant
 still `Survived` or `NoCoverage` then is a finding, on that mutant's file and
 `location.start.line`: say what the mutant changes (its mutator and
-replacement) and why no test could catch it.
+replacement) and the test it still needs, or why no test can tell it from the
+original.
 
 Never add a `// Stryker disable` comment, and never touch the Stryker config
 or `scripts/mutation.sh`, to get past the gate. Only a person adds a
