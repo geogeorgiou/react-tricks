@@ -4,7 +4,7 @@ import type { ComponentType } from 'react';
 /**
  * Lessons are discovered from the file system:
  *
- *   src/lessons/<lesson-id>/index.mdx   lesson title, order, summary
+ *   src/lessons/<lesson-id>/index.mdx   lesson title, section, order, summary
  *   src/lessons/<lesson-id>/AppN.tsx    the question component (and its source)
  *   src/lessons/<lesson-id>/AppN.mdx    prompt + explanation for AppN
  *
@@ -12,8 +12,23 @@ import type { ComponentType } from 'react';
  * its .tsx and .mdx files.
  */
 
+/**
+ * Sections in course order. A Lesson names its Section in frontmatter, and its
+ * `order` places it within that Section. The sidebar, the overview and search
+ * all run through the Sections in this order.
+ */
+export const SECTION_TITLES = [
+  'Rendering Fundamentals',
+  'Effects',
+  'Memoization',
+  'New in React 19',
+] as const;
+
+export type SectionTitle = (typeof SECTION_TITLES)[number];
+
 export type LessonFrontmatter = {
   title: string;
+  section: SectionTitle;
   order: number;
   summary: string;
 };
@@ -114,13 +129,27 @@ function buildQuestions(lessonId: string): Question[] {
     .map(({ order: _order, ...question }) => question);
 }
 
-export const lessons: Lesson[] = Object.entries(lessonDocs)
+export type Section = {
+  title: SectionTitle;
+  lessons: Lesson[];
+};
+
+export function isSectionTitle(value: unknown): value is SectionTitle {
+  return SECTION_TITLES.some((title) => title === value);
+}
+
+const discoveredLessons: Lesson[] = Object.entries(lessonDocs)
   .map(([path, doc]) => {
     assertFrontmatter(path, doc.frontmatter, {
       title: 'string',
       order: 'number',
       summary: 'string',
     });
+    if (!isSectionTitle(doc.frontmatter.section)) {
+      throw new Error(
+        `${path}: frontmatter "section" must be one of ${SECTION_TITLES.join(', ')}`,
+      );
+    }
     const id = lessonIdOf(path);
 
     return {
@@ -132,6 +161,18 @@ export const lessons: Lesson[] = Object.entries(lessonDocs)
   })
   .filter((lesson) => lesson.questions.length > 0)
   .sort((a, b) => a.order - b.order);
+
+/**
+ * Sections in course order, each with its Lessons in `order`, leaving out any
+ * Section that has no Lessons yet.
+ */
+export const sections: Section[] = SECTION_TITLES.map((title) => ({
+  title,
+  lessons: discoveredLessons.filter((lesson) => lesson.section === title),
+})).filter((section) => section.lessons.length > 0);
+
+/** Every Lesson across the course: Section by Section, each in `order`. */
+export const lessons: Lesson[] = sections.flatMap((section) => section.lessons);
 
 export function findLesson(id: string | undefined) {
   return lessons.find((lesson) => lesson.id === id);

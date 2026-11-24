@@ -1,6 +1,16 @@
-import { AtomIcon, BookOpenIcon, LayoutGridIcon } from 'lucide-react';
+import {
+  AtomIcon,
+  BookOpenIcon,
+  ChevronDownIcon,
+  LayoutGridIcon,
+} from 'lucide-react';
 import { NavLink, useMatch } from 'react-router';
 
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import {
   Sidebar,
   SidebarContent,
@@ -17,7 +27,12 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { FeedbackButton } from '@/features/feedback/feedback-button';
-import { lessons } from '@/features/lessons/registry';
+import {
+  findLesson,
+  sections,
+  type Section,
+} from '@/features/lessons/registry';
+import { useClosedSections } from '@/features/sections/closed-sections';
 import { ThemeToggle } from '@/features/theme/theme-toggle';
 
 export function AppSidebar() {
@@ -25,6 +40,10 @@ export function AppSidebar() {
   const isOverview = useMatch('/') !== null;
   const lessonMatch = useMatch('/lessons/:lessonId');
   const closeOnMobile = () => setOpenMobile(false);
+  const activeLessonId = lessonMatch?.params.lessonId;
+  const { isOpen, setSectionOpen } = useClosedSections(
+    findLesson(activeLessonId),
+  );
 
   return (
     <Sidebar collapsible='icon'>
@@ -67,29 +86,16 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup>
-          <SidebarGroupLabel>Lessons</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {lessons.map((lesson) => (
-                <SidebarMenuItem key={lesson.id}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={lessonMatch?.params.lessonId === lesson.id}
-                    tooltip={lesson.title}>
-                    <NavLink
-                      to={`/lessons/${lesson.id}`}
-                      onClick={closeOnMobile}>
-                      <BookOpenIcon />
-                      <span>{lesson.title}</span>
-                    </NavLink>
-                  </SidebarMenuButton>
-                  <SidebarMenuBadge>{lesson.questions.length}</SidebarMenuBadge>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {sections.map((section) => (
+          <SidebarSection
+            key={section.title}
+            section={section}
+            activeLessonId={activeLessonId}
+            open={isOpen(section.title)}
+            onOpenChange={(open) => setSectionOpen(section.title, open)}
+            onNavigate={closeOnMobile}
+          />
+        ))}
       </SidebarContent>
 
       <SidebarFooter>
@@ -104,5 +110,64 @@ export function AppSidebar() {
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
+  );
+}
+
+function SidebarSection({
+  section,
+  activeLessonId,
+  open,
+  onOpenChange,
+  onNavigate,
+}: {
+  section: Section;
+  activeLessonId: string | undefined;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onNavigate: () => void;
+}) {
+  const { state, isMobile } = useSidebar();
+  // The icon rail hides Section headings, so a closed Section would leave its
+  // Lessons unreachable there. Show them all while the rail is collapsed, and
+  // take the hidden heading out of the tab order.
+  const isIconRail = state === 'collapsed' && !isMobile;
+
+  return (
+    <Collapsible
+      open={open || isIconRail}
+      onOpenChange={onOpenChange}
+      disabled={isIconRail}
+      className='group/section'>
+      <SidebarGroup>
+        <SidebarGroupLabel
+          asChild
+          className='hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'>
+          <CollapsibleTrigger>
+            {section.title}
+            <ChevronDownIcon className='ml-auto transition-transform group-data-[state=closed]/section:-rotate-90' />
+          </CollapsibleTrigger>
+        </SidebarGroupLabel>
+        <CollapsibleContent>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {section.lessons.map((lesson) => (
+                <SidebarMenuItem key={lesson.id}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={activeLessonId === lesson.id}
+                    tooltip={lesson.title}>
+                    <NavLink to={`/lessons/${lesson.id}`} onClick={onNavigate}>
+                      <BookOpenIcon />
+                      <span>{lesson.title}</span>
+                    </NavLink>
+                  </SidebarMenuButton>
+                  <SidebarMenuBadge>{lesson.questions.length}</SidebarMenuBadge>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </CollapsibleContent>
+      </SidebarGroup>
+    </Collapsible>
   );
 }

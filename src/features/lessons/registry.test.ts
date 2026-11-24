@@ -1,19 +1,34 @@
 import { describe, expect, test } from 'vite-plus/test';
 
-import { findLesson, lessons } from './registry';
+import { findLesson, lessons, sections } from './registry';
 
 describe('lesson registry', () => {
-  test('discovers every lesson folder, ordered by frontmatter', () => {
+  test('discovers every lesson folder, in course order Section by Section', () => {
     expect(lessons.map((lesson) => lesson.id)).toEqual([
       'console-log',
+      'will-re-render',
+      'context',
       'use-effect',
       'use-effect-set-interval',
       'use-memo',
       'use-callback',
-      'will-re-render',
-      'context',
       'use',
     ]);
+  });
+
+  test('groups every lesson into exactly one Section, in Section order', () => {
+    expect(
+      sections.map((section) => [
+        section.title,
+        section.lessons.map((lesson) => lesson.id),
+      ]),
+    ).toEqual([
+      ['Rendering Fundamentals', ['console-log', 'will-re-render', 'context']],
+      ['Effects', ['use-effect', 'use-effect-set-interval']],
+      ['Memoization', ['use-memo', 'use-callback']],
+      ['New in React 19', ['use']],
+    ]);
+    expect(sections.flatMap((section) => section.lessons)).toEqual(lessons);
   });
 
   test.each(lessons.map((lesson) => [lesson.id, lesson] as const))(

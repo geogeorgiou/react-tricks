@@ -46,11 +46,11 @@ Every tab shows the question's prompt and its real source code. Hit **Reveal ans
 
 ## Adding a lesson
 
-Lessons are discovered from the file system. There's no registry to update:
+Lessons are discovered from the file system. There's no registry to update, unless the Lesson starts a new Section (add its title to `SECTION_TITLES` in `src/features/lessons/registry.ts`):
 
 ```
 src/lessons/<lesson-id>/      folder name = URL slug (kebab-case)
-  index.mdx                   title, order, summary + short intro
+  index.mdx                   title, section, order, summary + short intro
   App1.tsx                    the component, exported as `App1`
   App1.mdx                    prompt + answer + explanation for App1
   App2.tsx / App2.mdx         …and so on
@@ -61,7 +61,8 @@ src/lessons/<lesson-id>/      folder name = URL slug (kebab-case)
 ```mdx
 ---
 title: 'Console Log'
-order: 1
+section: 'Rendering Fundamentals' # one of SECTION_TITLES in registry.ts
+order: 1 # position within its Section; Sections run in SECTION_TITLES order
 summary: 'Shown on the overview card.'
 ---
 
