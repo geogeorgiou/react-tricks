@@ -24,7 +24,7 @@ export default defineConfig({
     env: {
       builtin: true,
     },
-    ignorePatterns: ['dist', 'coverage'],
+    ignorePatterns: ['dist', 'coverage', 'reports', '.stryker-tmp'],
     overrides: [
       {
         files: ['**/*.{ts,tsx}'],
@@ -213,7 +213,15 @@ export default defineConfig({
       functions: ['cn', 'cva', 'clsx'],
     },
     // .agents/skills is vendored from upstream; keep it byte-identical.
-    ignorePatterns: ['build', 'dist', 'coverage', 'pnpm-lock.yaml', '.agents'],
+    ignorePatterns: [
+      'build',
+      'dist',
+      'coverage',
+      'reports',
+      '.stryker-tmp',
+      'pnpm-lock.yaml',
+      '.agents',
+    ],
   },
   plugins: lazyPlugins(() => [
     {
