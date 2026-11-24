@@ -1,7 +1,7 @@
 import { Activity, useEffect, useState } from 'react';
 
 const ChatRoom = () => {
-  const [messages, setMessages] = useState(0);
+  const [sentCount, setSentCount] = useState(0);
 
   useEffect(() => {
     console.log('connected');
@@ -10,8 +10,8 @@ const ChatRoom = () => {
 
   return (
     <div>
-      <p>Messages sent: {messages}</p>
-      <button onClick={() => setMessages((m) => m + 1)}>Send</button>
+      <p>Messages sent: {sentCount}</p>
+      <button onClick={() => setSentCount((c) => c + 1)}>Send</button>
     </div>
   );
 };

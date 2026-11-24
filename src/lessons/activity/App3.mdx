@@ -21,7 +21,7 @@ It shows **Messages sent: 2**.
 
 Hiding an `<Activity>` keeps its children's **state** but cleans up their **effects**, as if they had unmounted. Showing it again runs the effects again, as if they had mounted, but with the state they had before.
 
-So `ChatRoom` disconnects while nobody can see it, and reconnects when it is shown, without losing `messages`.
+So `ChatRoom` disconnects while nobody can see it, and reconnects when it is shown, without losing `sentCount`.
 
 > **In StrictMode (development):** React runs every effect, cleans it up and runs it again whenever it mounts or is shown, so each `connected` above appears as `connected`, `disconnected`, `connected`.
 
