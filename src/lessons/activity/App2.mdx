@@ -14,9 +14,7 @@ Both tabs stay mounted, each in its own `<Activity>`. Switching tabs only flips 
 Switching tabs by rendering only the current one remounts it every time:
 
 ```tsx
-{
-  tab === 'counter' && <CounterTab />;
-}
+<div>{tab === 'counter' && <CounterTab />}</div>
 ```
 
 With that, going back to **Counter** shows **Count: 0**.

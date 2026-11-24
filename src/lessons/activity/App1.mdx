@@ -14,9 +14,7 @@ prompt: 'Expand "Genre", click "Hide filters", then "Show filters". Is "Genre" s
 The usual way to hide a panel loses that state:
 
 ```tsx
-{
-  showFilters && <FilterPanel />;
-}
+<div>{showFilters && <FilterPanel />}</div>
 ```
 
 Here `false` unmounts `FilterPanel`, so every `FilterGroup` mounts again with `useState(false)` and both groups come back collapsed.
