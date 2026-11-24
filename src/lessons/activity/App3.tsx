@@ -17,14 +17,14 @@ const ChatRoom = () => {
 };
 
 export const App3 = () => {
-  const [open, setOpen] = useState(true);
+  const [showChat, setShowChat] = useState(true);
 
   return (
     <div>
-      <button onClick={() => setOpen((o) => !o)}>
-        {open ? 'Hide' : 'Show'} chat
+      <button onClick={() => setShowChat((s) => !s)}>
+        {showChat ? 'Hide' : 'Show'} chat
       </button>
-      <Activity mode={open ? 'visible' : 'hidden'}>
+      <Activity mode={showChat ? 'visible' : 'hidden'}>
         <ChatRoom />
       </Activity>
     </div>
