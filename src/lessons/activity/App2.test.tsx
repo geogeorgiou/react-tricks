@@ -14,6 +14,14 @@ const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
 const logged = () => consoleLogSpy.mock.calls.map(([message]) => message);
 
+// The Chat and Effect rows of the panel above the chat, term to value.
+const readout = () =>
+  Object.fromEntries(
+    screen
+      .getAllByRole('term')
+      .map((term) => [term.textContent, term.nextElementSibling?.textContent]),
+  );
+
 describe('App2', () => {
   afterEach(() => {
     consoleLogSpy.mockClear();
@@ -26,6 +34,7 @@ describe('App2', () => {
   test('cleans up effects while hidden but keeps state', () => {
     render(<App2 />);
     expect(logged()).toEqual(['connected']);
+    expect(readout()).toEqual({ Chat: 'visible', Effect: 'connected' });
 
     const send = screen.getByRole('button', { name: 'Send' });
     fireEvent.click(send);
@@ -33,9 +42,12 @@ describe('App2', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Hide chat' }));
     expect(logged()).toEqual(['connected', 'disconnected']);
+    expect(readout()).toEqual({ Chat: 'hidden', Effect: 'disconnected' });
+    expect(screen.getByText('Messages sent: 2')).not.toBeVisible();
 
     fireEvent.click(screen.getByRole('button', { name: 'Show chat' }));
     expect(logged()).toEqual(['connected', 'disconnected', 'connected']);
+    expect(readout()).toEqual({ Chat: 'visible', Effect: 'connected' });
     expect(screen.getByText('Messages sent: 2')).toBeVisible();
   });
 });

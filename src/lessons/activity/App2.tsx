@@ -1,31 +1,50 @@
 import { Activity, useEffect, useState } from 'react';
 
-const ChatRoom = () => {
+type Connection = 'connected' | 'disconnected';
+
+const ChatRoom = ({
+  onConnectionChange,
+}: {
+  onConnectionChange: (connection: Connection) => void;
+}) => {
   const [sentCount, setSentCount] = useState(0);
 
   useEffect(() => {
     console.log('connected');
-    return () => console.log('disconnected');
+    onConnectionChange('connected');
+    return () => {
+      console.log('disconnected');
+      onConnectionChange('disconnected');
+    };
   }, []);
 
   return (
-    <div>
-      <p>Messages sent: {sentCount}</p>
+    <p>
+      <span>Messages sent: {sentCount}</span>
       <button onClick={() => setSentCount((c) => c + 1)}>Send</button>
-    </div>
+    </p>
   );
 };
 
 export const App2 = () => {
   const [showChat, setShowChat] = useState(true);
+  const [connection, setConnection] = useState<Connection>('disconnected');
 
   return (
     <div>
-      <button onClick={() => setShowChat((s) => !s)}>
-        {showChat ? 'Hide' : 'Show'} chat
-      </button>
+      <p>
+        <button onClick={() => setShowChat((s) => !s)}>
+          {showChat ? 'Hide' : 'Show'} chat
+        </button>
+      </p>
+      <dl>
+        <dt>Chat</dt>
+        <dd>{showChat ? 'visible' : 'hidden'}</dd>
+        <dt>Effect</dt>
+        <dd>{connection}</dd>
+      </dl>
       <Activity mode={showChat ? 'visible' : 'hidden'}>
-        <ChatRoom />
+        <ChatRoom onConnectionChange={setConnection} />
       </Activity>
     </div>
   );
