@@ -13,6 +13,7 @@ describe('lesson registry', () => {
       'use-memo',
       'use-callback',
       'use',
+      'activity',
     ]);
   });
 
@@ -26,7 +27,7 @@ describe('lesson registry', () => {
       ['Rendering Fundamentals', ['console-log', 'will-re-render', 'context']],
       ['Effects', ['use-effect', 'use-effect-set-interval']],
       ['Memoization', ['use-memo', 'use-callback']],
-      ['New in React 19', ['use']],
+      ['New in React 19', ['use', 'activity']],
     ]);
     expect(sections.flatMap((section) => section.lessons)).toEqual(lessons);
   });

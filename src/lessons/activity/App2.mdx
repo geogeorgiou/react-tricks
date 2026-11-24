@@ -1,0 +1,32 @@
+---
+title: 'Switching views'
+prompt: 'Open "Counter", click "+1" three times, go back to "Home", then open "Counter" again. What does it show?'
+---
+
+## Expected output
+
+```txt
+(nothing logged)
+```
+
+It shows **Count: 3**.
+
+## Why
+
+Both views stay mounted, each in its own `<Activity>`. Switching views only flips which one is `"visible"`. The hidden `CounterView` keeps its `count`, so it comes back at 3.
+
+Switching views by rendering only the current one remounts it every time:
+
+```tsx
+{
+  view === 'counter' && <CounterView />;
+}
+```
+
+With that, going back to **Counter** shows **Count: 0**.
+
+React can also render hidden children at a lower priority, so a view can be ready before the user opens it.
+
+## Takeaway
+
+Wrap each view in `<Activity>` to switch between them without losing what the user did in each one.

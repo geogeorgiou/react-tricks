@@ -1,0 +1,30 @@
+---
+title: 'Hidden filter panel'
+prompt: 'Expand "Genre", click "Hide filters", then "Show filters". Is "Genre" still expanded?'
+---
+
+## Expected output
+
+```txt
+(nothing logged)
+```
+
+**Yes.** **Genre** is still expanded and lists Jazz, Rock and Techno. **Decade** is still collapsed.
+
+## Why
+
+`<Activity mode="hidden">` doesn't unmount `FilterPanel`. React hides it with `display: none` and keeps each `FilterGroup` and its `expanded` state. When `mode` goes back to `"visible"`, the panel reappears just as you left it.
+
+The usual way to hide a panel loses that state:
+
+```tsx
+{
+  showFilters && <FilterPanel />;
+}
+```
+
+Here `false` unmounts `FilterPanel`, so every `FilterGroup` mounts again with `useState(false)` and both groups come back collapsed.
+
+## Takeaway
+
+To hide UI the user will come back to, wrap it in `<Activity>` instead of rendering it conditionally: its state survives while it is hidden.

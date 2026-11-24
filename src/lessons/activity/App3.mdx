@@ -1,0 +1,30 @@
+---
+title: 'Effects while hidden'
+prompt: 'Click "Send" twice, then "Hide chat" and "Show chat". What is logged, and how many messages are shown?'
+strictModeSensitive: true
+---
+
+## Expected output
+
+```txt
+// mount
+connected
+// click "Hide chat"
+disconnected
+// click "Show chat"
+connected
+```
+
+It shows **Messages sent: 2**.
+
+## Why
+
+Hiding an `<Activity>` keeps its children's **state** but cleans up their **effects**, as if they had unmounted. Showing it again runs the effects again, as if they had mounted, but with the state they had before.
+
+So `ChatRoom` disconnects while nobody can see it, and reconnects when it is shown, without losing `messages`.
+
+> **In StrictMode (development):** React runs every effect, cleans it up and runs it again whenever it mounts or is shown, so each `connected` above appears as `connected`, `disconnected`, `connected`.
+
+## Takeaway
+
+A hidden `<Activity>` keeps state but not effects. Put subscriptions and timers in effects with a cleanup, and they stop while the UI is hidden.
