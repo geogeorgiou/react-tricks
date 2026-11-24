@@ -190,6 +190,16 @@
   .lesson-preview div + div {
     @apply mt-2;
   }
+
+  /* A tab row, then room before the panel it switches */
+  .lesson-preview [role='tablist'] {
+    @apply mb-4 flex gap-2 border-b pb-3;
+  }
+
+  /* Text and the button that changes it sit side by side */
+  .lesson-preview p:has(> button) {
+    @apply flex flex-wrap items-center gap-3;
+  }
 }
 
 /* Prose tweaks for lesson MDX (unlayered so they beat the typography plugin) */

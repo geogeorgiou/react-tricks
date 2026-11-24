@@ -8,10 +8,10 @@ const CounterTab = () => {
   const [count, setCount] = useState(0);
 
   return (
-    <div>
-      <p>Count: {count}</p>
+    <p>
+      <span>Count: {count}</span>
       <button onClick={() => setCount((c) => c + 1)}>+1</button>
-    </div>
+    </p>
   );
 };
 
