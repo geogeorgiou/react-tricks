@@ -62,7 +62,9 @@ purpose, so mutating it is meaningless.
   empty, so a bare `stryker run` finds no files and stops instead of
   mutating the whole codebase. Never-mutated paths that no app code imports
   (`.sandcastle`, `scripts`, `src/main.tsx`) are also left out of Stryker's
-  sandbox with `ignorePatterns`, so their tests don't run under it.
+  sandbox with `ignorePatterns`, so their tests don't run under it. So are
+  `.claude` and `.agents`: Stryker's copy fails on the `.claude/skills`
+  symlink (`EISDIR`).
 - Its base defaults to `origin/main` and can be overridden.
 - CI, `agent-review` and local runs all call it, so they never disagree about
   scope.

@@ -37,8 +37,6 @@ jobs:
       - name: Build
         run: pnpm build
 
-  # Mutation testing on the lines this PR changed. See
-  # docs/adr/0002-adopt-stryker-mutation-testing.md.
   mutation:
     name: Mutation
     if: github.event_name == 'pull_request'
@@ -47,10 +45,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          # The PR's own head, not the test merge commit, so annotation lines
-          # match the PR's files and the code matches the cache key's SHA.
           ref: ${{ github.event.pull_request.head.sha }}
-          # Full history, so the merge-base with the base branch resolves.
           fetch-depth: 0
           persist-credentials: false
 
@@ -60,8 +55,6 @@ jobs:
           node-version-file: .node-version
           cache: true
 
-      # Stryker's incremental baseline, kept per PR. Restore and save are
-      # separate steps so a run below the threshold still saves it.
       - name: Restore the incremental baseline
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
@@ -69,8 +62,6 @@ jobs:
           key: stryker-pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
           restore-keys: stryker-pr-${{ github.event.pull_request.number }}-
 
-      # Scope comes from the script. "nothing to mutate" exits 0; a score
-      # below the break threshold (60) exits 1.
       - name: Mutation test
         env:
           MUTATION_BASE: origin/${{ github.base_ref }}
