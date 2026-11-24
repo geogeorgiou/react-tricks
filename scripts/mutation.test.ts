@@ -2,6 +2,7 @@
 import { execFileSync, spawnSync } from 'node:child_process';
 import {
   chmodSync,
+  copyFileSync,
   mkdirSync,
   mkdtempSync,
   rmSync,
@@ -261,6 +262,23 @@ describe('scripts/mutation.sh without --list', () => {
     commit('src/features/preview/console-panel.tsx');
 
     expect(run(['main'], withFakeStryker('1')).status).toBe(1);
+  });
+
+  test('fails with a hint when Stryker is not installed', () => {
+    commit('src/features/preview/console-panel.tsx');
+    // A copy outside this repo, so its node_modules/.bin fallback is empty.
+    const script = path.join(bin, 'scripts', 'mutation.sh');
+    mkdirSync(path.dirname(script));
+    copyFileSync(SCRIPT, script);
+
+    const result = spawnSync(script, ['main'], {
+      cwd: repo,
+      env: { ...env, PATH: '/usr/bin:/bin' },
+      encoding: 'utf8',
+    });
+
+    expect(result.stderr).toContain('stryker not found');
+    expect(result.status).toBe(1);
   });
 
   test('does not run Stryker when nothing is in scope', () => {

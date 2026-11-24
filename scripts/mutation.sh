@@ -78,6 +78,10 @@ fi
 
 # Outside `pnpm`, fall back to this repo's own Stryker.
 PATH="$PATH:$(cd "$(dirname "$0")/.." && pwd)/node_modules/.bin"
+if ! command -v stryker >/dev/null 2>&1; then
+  echo "stryker not found. Install the dependencies with: pnpm install" >&2
+  exit 1
+fi
 mutate="$(
   IFS=,
   echo "${files[*]}"
