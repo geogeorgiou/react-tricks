@@ -13,9 +13,23 @@ export default {
   // (tsgo) has no JS API, so the rewrite crashes. Our tsconfig.json has
   // neither field, so point Stryker at no file and skip the rewrite.
   tsconfigFile: '',
-  // Kept out of the sandbox copy. .claude/skills is a symlink to a directory,
-  // which Stryker's copy fails on (EISDIR), and no test reads either folder.
-  ignorePatterns: ['.claude', '.agents'],
+  // Kept out of the sandbox copy, so Stryker never sees them and their tests
+  // never run under it:
+  // - .claude and .agents: .claude/skills is a symlink to a directory, which
+  //   Stryker's copy fails on (EISDIR), and no test reads either folder.
+  // - .sandcastle (the agent orchestrator), scripts (tooling) and
+  //   src/main.tsx (the browser entry): never mutated, and no app code or app
+  //   test imports them.
+  // Never-mutated files that app code or its tests do import (registry.ts,
+  // src/lessons, test-utils) must stay in the sandbox: they are excluded
+  // under `mutate` below instead.
+  ignorePatterns: [
+    '.claude',
+    '.agents',
+    '/.sandcastle',
+    '/scripts',
+    '/src/main.tsx',
+  ],
   mutate: [
     'src/features/**/*.{ts,tsx}',
     'src/app/**/*.{ts,tsx}',
@@ -27,8 +41,6 @@ export default {
     '!src/lessons/**',
     '!**/*.mdx',
     '!src/**/test-utils/**',
-    '!.sandcastle/**',
-    '!src/main.tsx',
     '!**/*.test.{ts,tsx}',
   ],
   thresholds: { high: 85, low: 70, break: 60 },
