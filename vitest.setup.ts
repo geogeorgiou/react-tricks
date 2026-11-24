@@ -10,16 +10,19 @@ globalThis.ResizeObserver ??= class {
   disconnect() {}
 };
 
-// jsdom has no matchMedia; the sidebar's mobile hook reads it.
-window.matchMedia ??= ((query: string) => ({
-  matches: false,
-  media: query,
-  addEventListener: () => {},
-  removeEventListener: () => {},
-})) as unknown as typeof window.matchMedia;
+// Node-environment tests (scripts/) have no DOM to stub.
+if (typeof window !== 'undefined') {
+  // jsdom has no matchMedia; the sidebar's mobile hook reads it.
+  window.matchMedia ??= ((query: string) => ({
+    matches: false,
+    media: query,
+    addEventListener: () => {},
+    removeEventListener: () => {},
+  })) as unknown as typeof window.matchMedia;
 
-// jsdom has no scrollIntoView; cmdk scrolls the selected search result into view.
-Element.prototype.scrollIntoView = () => {};
+  // jsdom has no scrollIntoView; cmdk scrolls the selected search result into view.
+  Element.prototype.scrollIntoView = () => {};
+}
 
 afterEach(() => {
   cleanup();
