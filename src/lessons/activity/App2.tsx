@@ -1,10 +1,10 @@
 import { Activity, useState } from 'react';
 
-type View = 'home' | 'counter';
+type Tab = 'home' | 'counter';
 
-const HomeView = () => <p>Welcome! Open the Counter view to count clicks.</p>;
+const HomeTab = () => <p>Welcome! Open the Counter tab to count clicks.</p>;
 
-const CounterView = () => {
+const CounterTab = () => {
   const [count, setCount] = useState(0);
 
   return (
@@ -16,19 +16,29 @@ const CounterView = () => {
 };
 
 export const App2 = () => {
-  const [view, setView] = useState<View>('home');
+  const [tab, setTab] = useState<Tab>('home');
 
   return (
     <div>
-      <nav>
-        <button onClick={() => setView('home')}>Home</button>
-        <button onClick={() => setView('counter')}>Counter</button>
-      </nav>
-      <Activity mode={view === 'home' ? 'visible' : 'hidden'}>
-        <HomeView />
+      <div role='tablist'>
+        <button
+          role='tab'
+          aria-selected={tab === 'home'}
+          onClick={() => setTab('home')}>
+          Home
+        </button>
+        <button
+          role='tab'
+          aria-selected={tab === 'counter'}
+          onClick={() => setTab('counter')}>
+          Counter
+        </button>
+      </div>
+      <Activity mode={tab === 'home' ? 'visible' : 'hidden'}>
+        <HomeTab />
       </Activity>
-      <Activity mode={view === 'counter' ? 'visible' : 'hidden'}>
-        <CounterView />
+      <Activity mode={tab === 'counter' ? 'visible' : 'hidden'}>
+        <CounterTab />
       </Activity>
     </div>
   );
