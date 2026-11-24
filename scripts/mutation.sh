@@ -50,11 +50,12 @@ in_scope() {
     src/main.tsx | *.test.ts | *.test.tsx) return 1 ;;
   esac
   case "$1" in
-    src/features/*.ts | src/features/*.tsx) return 0 ;;
-    src/app/*.ts | src/app/*.tsx) return 0 ;;
-    src/pages/*.ts | src/pages/*.tsx) return 0 ;;
-    src/common/*.ts | src/common/*.tsx) return 0 ;;
-    src/components/ui/*.ts | src/components/ui/*.tsx) return 0 ;;
+    *.ts | *.tsx) ;;
+    *) return 1 ;;
+  esac
+  case "$1" in
+    src/features/* | src/app/* | src/pages/* | src/common/*) return 0 ;;
+    src/components/ui/*) return 0 ;;
   esac
   return 1
 }
