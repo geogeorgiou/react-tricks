@@ -117,6 +117,14 @@ describe('scripts/mutation.sh --list', () => {
     expect(list().lines).toEqual(['src/features/preview/sandbox.ts']);
   });
 
+  test('only the last .test. names the sibling', () => {
+    commit('src/features/a.test.dir/x.ts');
+    git('switch', '--quiet', '--create', 'sibling');
+    commit('src/features/a.test.dir/x.test.ts');
+
+    expect(list('feature').lines).toEqual(['src/features/a.test.dir/x.ts']);
+  });
+
   test('a test without a sibling lists nothing', () => {
     commit('src/features/preview/orphan.test.ts');
 

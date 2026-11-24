@@ -31,7 +31,7 @@ candidates="$changed"
 while IFS= read -r file; do
   case "$file" in
     *.test.ts | *.test.tsx)
-      sibling="${file/.test./.}"
+      sibling="${file%.test.*}.${file##*.}"
       if [ -f "$sibling" ]; then
         candidates+=$'\n'"$sibling"
       fi
