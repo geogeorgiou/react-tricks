@@ -58,6 +58,11 @@ purpose, so mutating it is meaningless.
 - `scripts/mutation.ts` computes what to mutate (line ranges, scope filter,
   sibling rule) and invokes Stryker. It is exposed as `pnpm test:mutation`
   and run with `node`, which strips the types, so it needs no build step.
+- It is the only place scope is defined. `stryker.config.mjs` leaves `mutate`
+  empty, so a bare `stryker run` finds no files and stops instead of
+  mutating the whole codebase. Never-mutated paths that no app code imports
+  (`.sandcastle`, `scripts`, `src/main.tsx`) are also left out of Stryker's
+  sandbox with `ignorePatterns`, so their tests don't run under it.
 - Its base defaults to `origin/main` and can be overridden.
 - CI, `agent-review` and local runs all call it, so they never disagree about
   scope.

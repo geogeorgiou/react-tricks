@@ -52,7 +52,10 @@ function siblingOf(test: string): string {
   return test.replace(/\.test\.(tsx?)$/, '.$1');
 }
 
-/** The scope ADR 0002 sets. Keep in step with `mutate` in stryker.config.mjs. */
+/**
+ * The scope ADR 0002 sets. This is the only copy: stryker.config.mjs leaves
+ * `mutate` empty, and --mutate replaces it anyway.
+ */
 function inScope(file: string): boolean {
   if (!/\.tsx?$/.test(file) || isTest(file)) return false;
   if (

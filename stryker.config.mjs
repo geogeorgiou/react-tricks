@@ -21,8 +21,8 @@ export default {
   //   src/main.tsx (the browser entry): never mutated, and no app code or app
   //   test imports them.
   // Never-mutated files that app code or its tests do import (registry.ts,
-  // src/lessons, test-utils) must stay in the sandbox: they are excluded
-  // under `mutate` below instead.
+  // src/lessons, test-utils) must stay in the sandbox: scripts/mutation.ts
+  // keeps them out of --mutate instead.
   ignorePatterns: [
     '.claude',
     '.agents',
@@ -30,19 +30,11 @@ export default {
     '/scripts',
     '/src/main.tsx',
   ],
-  mutate: [
-    'src/features/**/*.{ts,tsx}',
-    'src/app/**/*.{ts,tsx}',
-    'src/pages/**/*.{ts,tsx}',
-    'src/common/**/*.{ts,tsx}',
-    'src/components/ui/**/*.{ts,tsx}',
-    // Lesson code is buggy on purpose.
-    '!src/features/lessons/registry.ts',
-    '!src/lessons/**',
-    '!**/*.mdx',
-    '!src/**/test-utils/**',
-    '!**/*.test.{ts,tsx}',
-  ],
+  // Empty on purpose. scripts/mutation.ts decides what to mutate and always
+  // passes --mutate, which replaces this list. With it empty, a bare
+  // `stryker run` finds no files and stops with an error, instead of
+  // mutating the whole codebase, which ADR 0002 rules out.
+  mutate: [],
   thresholds: { high: 85, low: 70, break: 60 },
   incremental: true,
   reporters: ['clear-text', 'progress', 'json', 'html'],
