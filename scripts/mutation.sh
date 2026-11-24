@@ -21,6 +21,9 @@ for arg in "$@"; do
   esac
 done
 
+# git prints paths from the repo root, so work from there.
+cd "$(git rev-parse --show-toplevel)"
+
 merge_base="$(git merge-base "$base" HEAD)"
 
 # Changed files, without deleted ones.

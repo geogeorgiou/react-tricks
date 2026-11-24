@@ -43,9 +43,13 @@ function commit(...files: string[]) {
   git('commit', '--quiet', '--allow-empty', '-m', 'change');
 }
 
-function run(args: string[], extraEnv: Record<string, string> = {}) {
+function run(
+  args: string[],
+  extraEnv: Record<string, string> = {},
+  cwd = repo,
+) {
   const result = spawnSync(SCRIPT, args, {
-    cwd: repo,
+    cwd,
     env: { ...env, ...extraEnv },
     encoding: 'utf8',
   });
@@ -123,6 +127,14 @@ describe('scripts/mutation.sh --list', () => {
     commit('src/features/a.test.dir/x.test.ts');
 
     expect(list('feature').lines).toEqual(['src/features/a.test.dir/x.ts']);
+  });
+
+  test('finds the sibling when run from a subfolder', () => {
+    commit('src/features/preview/sandbox.test.ts');
+
+    expect(run(['--list', 'main'], {}, path.join(repo, 'src')).lines).toEqual([
+      'src/features/preview/sandbox.ts',
+    ]);
   });
 
   test('a test without a sibling lists nothing', () => {
