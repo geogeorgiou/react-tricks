@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import {
   afterAll,
   afterEach,
@@ -23,7 +23,7 @@ describe('App2', () => {
     consoleLogSpy.mockRestore();
   });
 
-  test('cleans up effects while hidden but keeps state', async () => {
+  test('cleans up effects while hidden but keeps state', () => {
     render(<App2 />);
     expect(logged()).toEqual(['connected']);
 
@@ -31,14 +31,10 @@ describe('App2', () => {
     fireEvent.click(send);
     fireEvent.click(send);
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'Hide chat' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'Hide chat' }));
     expect(logged()).toEqual(['connected', 'disconnected']);
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'Show chat' }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'Show chat' }));
     expect(logged()).toEqual(['connected', 'disconnected', 'connected']);
     expect(screen.getByText('Messages sent: 2')).toBeVisible();
   });
