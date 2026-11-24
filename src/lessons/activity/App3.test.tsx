@@ -1,5 +1,12 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, test, vi } from 'vite-plus/test';
+import {
+  afterAll,
+  afterEach,
+  describe,
+  expect,
+  test,
+  vi,
+} from 'vite-plus/test';
 
 import { App3 } from './App3';
 
@@ -10,6 +17,10 @@ const logged = () => consoleLogSpy.mock.calls.map(([message]) => message);
 describe('App3', () => {
   afterEach(() => {
     consoleLogSpy.mockClear();
+  });
+
+  afterAll(() => {
+    consoleLogSpy.mockRestore();
   });
 
   test('cleans up effects while hidden but keeps state', async () => {
