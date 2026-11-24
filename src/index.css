@@ -119,6 +119,16 @@
   body {
     @apply bg-background text-foreground antialiased;
   }
+
+  /* Tailwind v4 leaves buttons on the default cursor; anything a learner can
+     click, from the sidebar toggle to a tab or a search result, gets a pointer. */
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']),
+  [role='tab'],
+  [role='option'],
+  summary {
+    @apply cursor-pointer;
+  }
 }
 
 /* Shiki dual themes: light colors inline by default, swap to dark vars under .dark */
@@ -179,6 +189,29 @@
   .lesson-preview > * + *,
   .lesson-preview div + div {
     @apply mt-2;
+  }
+
+  /* A tab row, then room before the panel it switches */
+  .lesson-preview [role='tablist'] {
+    @apply mb-4 flex gap-2 border-b pb-3;
+  }
+
+  /* Text and the button that changes it sit side by side */
+  .lesson-preview p:has(> button) {
+    @apply flex flex-wrap items-center gap-3;
+  }
+
+  /* Term and value pairs read as a small two-column table */
+  .lesson-preview dl {
+    @apply my-4 grid w-fit grid-cols-[auto_auto] gap-x-4 gap-y-1 rounded-md border px-3 py-2;
+  }
+
+  .lesson-preview dt {
+    @apply text-muted-foreground;
+  }
+
+  .lesson-preview dd {
+    @apply font-medium;
   }
 }
 

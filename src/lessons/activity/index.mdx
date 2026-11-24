@@ -1,0 +1,8 @@
+---
+title: '<Activity>'
+section: 'New in React 19'
+order: 9
+summary: 'Hide part of the UI without unmounting it: state survives, effects are cleaned up.'
+---
+
+`<Activity mode="hidden">` hides its children with `display: none` but keeps them mounted, so their state is still there when `mode` goes back to `"visible"`. Their effects are cleaned up while they are hidden and run again when they are shown. Rendering conditionally with `{tab === 'counter' && <CounterTab />}` unmounts the children instead, and their state is lost.
