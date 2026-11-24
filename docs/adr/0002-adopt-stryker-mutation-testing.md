@@ -24,7 +24,8 @@ purpose, so mutating it is meaningless.
 ### What gets mutated
 
 - **In scope:** `src/features/**`, `src/app/**`, `src/pages/**`,
-  `src/common/**` and `src/components/ui/**`.
+  `src/common/**` and `src/components/ui/**`. Nothing else under `src/` is
+  mutated, which today leaves out `src/hooks/` and `src/lib/`.
 - **Never mutated, even when changed:**
   - `src/features/lessons/registry.ts`
   - `src/lessons/**` (Lesson code is buggy on purpose)
