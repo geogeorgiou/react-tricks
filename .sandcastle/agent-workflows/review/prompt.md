@@ -45,11 +45,11 @@ still `Survived` or `NoCoverage` then is a finding, on that mutant's file and
 replacement) and the test it still needs, or why no test can tell it from the
 original.
 
-Never add a `// Stryker disable` comment, and never touch the Stryker config
-or `scripts/mutation.sh`, to get past the gate. Only a person adds a
-suppression. When you think one is justified, because the mutant is
-equivalent to the original code, leave it as a finding on that line, with the
-exact comment to add:
+Never add a `// Stryker disable` comment, and never touch
+`stryker.config.mjs` or `scripts/mutation.sh`, to get past the gate. Only a
+person adds a suppression. When you think one is justified, because the
+mutant is equivalent to the original code, leave it as a finding on that line,
+with the exact comment to add:
 `// Stryker disable next-line <mutator>: <reason>`.
 
 ## Fix everything a person does not have to decide
