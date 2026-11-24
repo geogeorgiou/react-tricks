@@ -300,6 +300,55 @@ describe('scripts/mutation.ts --list, changed lines', () => {
   });
 });
 
+describe('scripts/mutation.ts --list, .sandcastle', () => {
+  // .sandcastle is the agent orchestrator, not app code: it is never mutated,
+  // however it changed. `--mutate` replaces stryker.config.mjs's globs, so
+  // this script is the only guard.
+  const source = '.sandcastle/agent-workflows/review/left-findings.ts';
+  const testFile = '.sandcastle/agent-workflows/review/left-findings.test.ts';
+
+  test.each([
+    [
+      'changed lines',
+      () => {
+        startFromFiveLines(source);
+        writeLines(source, ['const a = 10;', ...FIVE.slice(1)]);
+        git('commit', '--quiet', '--all', '-m', 'edit');
+      },
+    ],
+    [
+      'an uncommitted edit',
+      () => {
+        startFromFiveLines(source);
+        writeLines(source, ['const a = 10;', ...FIVE.slice(1)]);
+      },
+    ],
+    [
+      'an untracked file',
+      () => {
+        git('switch', '--quiet', '--create', 'edit');
+        writeLines('.sandcastle/agent-workflows/review/draft.ts', FIVE);
+      },
+    ],
+    [
+      'a changed test next to its source',
+      () => {
+        writeLines(source, FIVE);
+        startFromFiveLines(testFile);
+        writeLines(testFile, FIVE.slice(0, 4));
+        git('commit', '--quiet', '--all', '-m', 'edit the test');
+      },
+    ],
+  ])('lists nothing for %s', (_name, change) => {
+    change();
+
+    const result = list('feature');
+
+    expect(result.lines).toEqual(['nothing to mutate']);
+    expect(result.status).toBe(0);
+  });
+});
+
 describe('scripts/mutation.ts base', () => {
   beforeEach(() => {
     commit('src/features/preview/console-panel.tsx');
